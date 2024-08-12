@@ -1,0 +1,10 @@
+{
+    "rtmp": [
+        {
+            "in": "rtmp://127.0.0.1/camera/camera_stream",
+            "out": "rtmp://127.0.0.1/yolov8n/yolov8n_stream",
+            "dst_width": 1920,
+            "dst_height": 1536
+        }
+    ]
+}
