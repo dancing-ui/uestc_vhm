@@ -22,7 +22,8 @@ int32_t RtmpHandler::Init(StreamMediaCfgItem const &stream_media_cfg, ModelCfgIt
     InitModelParameters(stream_media_cfg, model_cfg);
     capture_.open(stream_media_cfg_.in);
     if (!capture_.isOpened()) {
-        static_cast<void>(ReconnectCamera());
+        PRINT_ERROR("open rtmp's stream failed\n");
+        return -1;
     }
     if (!utils::setInputStream(source_, image_path_, video_path_, camera_id_,
                                capture_, total_batches_, delay_time_, model_cfg_.param)) {
@@ -174,13 +175,17 @@ int32_t RtmpHandler::ReconnectCamera() {
     int32_t ret{0};
     uint64_t retry_nums{0};
     cv::Mat frame;
-    while (true) {
+    while (is_finished_.load() == false) {
         capture_.open(stream_media_cfg_.in);
         if (capture_.read(frame)) {
             break;
         }
         retry_nums++;
         PRINT_INFO("trying to reconnect %s, retry_nums=%lu\n", stream_media_cfg_.in.c_str(), retry_nums);
+        sleep(5);
+    }
+    if(is_finished_.load() == true) {
+        return 0;
     }
     PRINT_INFO("reconnecting to %s succeeded, total_retry_nums=%lu\n", stream_media_cfg_.in.c_str(), retry_nums);
     ret = OpenOutputStream();

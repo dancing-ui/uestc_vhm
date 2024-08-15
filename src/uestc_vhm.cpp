@@ -28,6 +28,7 @@ int main(int argc, char **argv) {
     } else if (ret == 1) {
         return 0;
     }
+    PRINT_INFO("parse args succeed\n");
     ns_uestc_vhm::Config cfg{opt};
     ret = cfg.Init();
     if (ret < 0) {
@@ -39,6 +40,7 @@ int main(int argc, char **argv) {
         PRINT_ERROR("parse config failed, ret=%d\n", ret);
         return -1;
     }
+    PRINT_INFO("parse config succeed\n");
     std::unique_ptr<ns_uestc_vhm::StreamMedia> stream_media = std::make_unique<ns_uestc_vhm::StreamMedia>();
     if (stream_media.get() == nullptr) {
         PRINT_ERROR("create stream_media failed\n");
@@ -49,25 +51,22 @@ int main(int argc, char **argv) {
         PRINT_ERROR("init stream_media failed, ret=%d\n", ret);
         return -1;
     }
+    PRINT_INFO("init stream_media succeed\n");
     ret = stream_media->Start();
     if (ret < 0) {
         PRINT_ERROR("start stream_media failed, ret=%d\n", ret);
         return -1;
     }
-    // int32_t wait_time{10};
-    // int32_t cur_time{0};
+    PRINT_INFO("start stream_media succeed, main thread sleeping now\n");
     while (g_is_finished.load() == false) {
-        // if(cur_time >= wait_time) {
-        //     break;
-        // }
         sleep(1);
-        // cur_time++;
     }
     ret = stream_media->Stop();
     if (ret < 0) {
         PRINT_ERROR("stop stream_media failed, ret=%d\n", ret);
         return -1;
     }
+    PRINT_INFO("stop stream_media succeed\n");
     PRINT_INFO("end app(uestc_vhm)\n");
     return 0;
 }
