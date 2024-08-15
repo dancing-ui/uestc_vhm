@@ -1,0 +1,39 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                // "-DTEST_FILE_NAME=${fileBasenameNoExtension}",
+                // "--debug-trycompile",
+                "-DBUILD_PLATFORM=x86_64",
+                ".."
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build/"
+            },
+        },
+        {
+            "label": "Make",
+            "type": "shell",
+            "command": "make",
+            "args": [
+                "-j20"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build/"
+            },
+            "dependsOn": [
+                "CMake"
+            ]
+        },
+        {
+            "label": "Build",
+            "dependsOn": [
+                "Make"
+            ]
+        },
+    ],
+}

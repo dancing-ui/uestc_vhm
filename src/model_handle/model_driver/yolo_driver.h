@@ -1,17 +1,24 @@
 #ifndef _UESTC_VHM_YOLO_H_
 #define _UESTC_VHM_YOLO_H_
-#include "common_include.h"
 #include "utils.h"
 #include "kernel_function.h"
+#include "config.h"
+#include "model_handle_common.h"
+
+namespace ns_uestc_vhm {
 
 namespace yolo {
 class YOLO {
 public:
-    YOLO(const utils::InitParameter &param);
+    YOLO(ModelCfgItem const &cfg);
     ~YOLO();
 
+    YOLO(YOLO const &) = default;
+    YOLO &operator=(YOLO const &) = default;
+
 public:
-    virtual bool init(const std::vector<unsigned char> &trtFile);
+    virtual int32_t Init();
+    virtual int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const& handle_cb);
     virtual void check();
     virtual void copy(const std::vector<cv::Mat> &imgsBatch);
     virtual void preprocess(const std::vector<cv::Mat> &imgsBatch);
@@ -27,7 +34,7 @@ protected:
     std::unique_ptr<nvinfer1::IExecutionContext> m_context;
 
 protected:
-    utils::InitParameter m_param;
+    ModelCfgItem cfg_;
     nvinfer1::Dims m_output_dims;
     int m_output_area;
     int m_total_objects;
@@ -48,5 +55,8 @@ protected:
     int *m_output_idx_device;
     float *m_output_conf_device;
 };
-}
+} // yolo
+
+} // ns_uestc_vhm
+
 #endif // _UESTC_VHM_YOLO_H_

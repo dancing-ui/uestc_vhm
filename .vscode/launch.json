@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${relativeFileDirname}/${fileBasenameNoExtension}",
+            "args": [
+                "--model=/home/xy/work/tensorrt-alpha/data/yolov8/yolov8n.trt",
+                "--batch=4",
+                "--config=/home/xy/work/tensorrt-alpha/uestc_vhm/src/etc/uestc_vhm_cfg.json",
+                "--save=/tmp/uestc_vhm_save_dir",
+                "--show"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build",
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}

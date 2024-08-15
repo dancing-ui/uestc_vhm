@@ -9,18 +9,24 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -ggdb -std=c++17 -Wall -Wno-deprec
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR: ${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(SRC_DIR 
+    3rd_party
     common 
-    # # hardware_accelerator
-    # # hardware_accelerator_driver/cuda/decode/yolov8
-    # # hardware_accelerator_driver/cuda/utils
+    config
+    hardware_accelerator
+    hardware_accelerator/hardware_accelerator_driver/cuda/decode/yolov8
+    hardware_accelerator/hardware_accelerator_driver/cuda/kernel_function
     log
-    # # model_handle
-    # # model_handle/model_driver/yolov8
+    model_handle
+    model_handle/model_driver
+    model_handle/model_driver/yolov8
+    model_handle/model_manager
     parameter
-    # # stream_media
-    # # stream_media/stream_media_driver/rtmp
-    # # stream_media/stream_media_driver/rtsp
-    # utils
+    stream_media
+    stream_media/stream_media_manager
+    stream_media/stream_media_driver
+    stream_media/stream_media_driver/rtmp
+    stream_media/stream_media_driver/rtsp
+    utils
     # # video_process
     # # video_process/codec_driver/ffmpeg
     # # video_process/codec_manager
@@ -45,25 +51,23 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 list(APPEND DEPEND_LIB_LIST ${CUDA_ALL_LIBS} ${OpenCV_LIBRARIES})
 
+message(STATUS "DEPEND_LIB_LIST: ${DEPEND_LIB_LIST}")
+
 add_executable(${PROJECT_NAME} 
-    app/main.cpp
+    uestc_vhm.cpp
     ${SOURCE_LIST}
     ${TensorRT_ROOT}/samples/common/logger.cpp 
-    ${TensorRT_ROOT}/samples/common/sampleOptions.cpp
-    ${TensorRT_ROOT}/samples/common/sampleUtils.cpp
+    # ${TensorRT_ROOT}/samples/common/sampleOptions.cpp
+    # ${TensorRT_ROOT}/samples/common/sampleUtils.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${DEPEND_LIB_LIST})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CUDA_ARCHITECTURES 50 61 72 75 89)
 target_compile_options(${PROJECT_NAME} PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--default-stream per-thread -lineinfo; --use_fast_math --disable-warnings>)
 
-elseif(not "${BUILD_PLATFORM}" STREQUAL "")
-
-message(FATAL_ERROR "Unsupported architecture")
-
 else()
 
-message(FATAL_ERROR "BUILD_PLATFORM field is empty")
+message(FATAL_ERROR "Unsupported architecture")
 
 endif()
 

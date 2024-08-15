@@ -24,6 +24,8 @@ find_library(TRT_NVCAFFE_PARSER NAMES nvcaffe_parser HINTS ${TensorRT_ROOT} PATH
 find_path(TENSORRT_INCLUDE_DIR NAMES NvInfer.h HINTS ${TensorRT_ROOT} PATH_SUFFIXES include)
 list(APPEND CUDA_ALL_LIBS ${TRT_NVINFER} ${TRT_NVINFER_PLUGIN} ${TRT_NVONNX_PARSER} ${TRT_NVCAFFE_PARSER})
 
+# for libtensorrt_sample_common.so
+# list(APPEND CUDA_ALL_LIBS ${TensorRT_ROOT}/samples/common/libtensorrt_sample_common.so)
 # include tensorrt's headers
 list(APPEND CUDA_INCLUDE_DIRS ${TENSORRT_INCLUDE_DIR})
 

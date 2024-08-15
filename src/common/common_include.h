@@ -26,8 +26,6 @@
 #include <sstream>
 #include <vector>
 #include <chrono>
-// GNU
-#include <getopt.h>
 #endif // BUILD_X86_64
 
 #endif // _UESTC_VHM_COMMON_INCLUDE_H_

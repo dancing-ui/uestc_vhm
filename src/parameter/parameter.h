@@ -19,8 +19,8 @@ struct InitParameter {
     float means[3] = {0.f, 0.f, 0.f};
     float stds[3] = {1.f, 1.f, 1.f};
 
-    float iou_thresh;
-    float conf_thresh;
+    float iou_thresh{0.45f};
+    float conf_thresh{0.25f};
 
     int topK{1000};
     std::string save_path;
@@ -31,7 +31,6 @@ struct InitParameter {
     double font_scale = 0.6;
     bool is_show{false};
     bool is_save{false};
-    std::string save_dir;
 };
 
 struct ParamOpt {

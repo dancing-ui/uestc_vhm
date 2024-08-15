@@ -94,14 +94,14 @@ int32_t ParseOpt(int32_t argc, char **argv, ParamOpt &opt) {
     }
 
     if (opt_parser.has("save")) {
-        opt.param.save_dir = opt_parser.get<std::string>("save");
+        opt.param.save_path = opt_parser.get<std::string>("save");
         opt.param.is_save = true;
-        if (opt.param.save_dir.empty()) {
+        if (opt.param.save_path.empty()) {
             PRINT_ERROR("empty save path\n");
             OptionUsage();
             return -6;
         } else {
-            PRINT_INFO("save path: %s\n", opt.param.save_dir.c_str());
+            PRINT_INFO("save path: %s\n", opt.param.save_path.c_str());
         }
     }
 

@@ -1,0 +1,14 @@
+{
+    "stream_media": [
+        {
+            "id": 1,
+            "enable": true,
+            "type": "rtmp",
+            "name": "unknown",
+            "in": "rtmp://127.0.0.1/camera/camera_stream",
+            "out": "rtmp://127.0.0.1/yolov8n/yolov8n_stream",
+            "dst_width": 640,
+            "dst_height": 640
+        }
+    ]
+}

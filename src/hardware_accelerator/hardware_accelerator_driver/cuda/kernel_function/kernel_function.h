@@ -1,7 +1,8 @@
 #ifndef _UESTC_VHM_KERNEL_FUNCTION_H_
 #define _UESTC_VHM_KERNEL_FUNCTION_H_
-#include "common_include.h"
 #include "utils.h"
+
+namespace ns_uestc_vhm {
 
 #define checkRuntime(op) __check_cuda_runtime((op), #op, __FILE__, __LINE__)
 
@@ -29,20 +30,23 @@ void bgr2rgbDevice(const int &batch_size, float *src, int srcWidth, int srcHeigh
 
 void normDevice(const int &batch_size, float *src, int srcWidth, int srcHeight,
                 float *dst, int dstWidth, int dstHeight,
-                utils::InitParameter norm_param);
+                InitParameter norm_param);
 
 void hwc2chwDevice(const int &batch_size, float *src, int srcWidth, int srcHeight,
                    float *dst, int dstWidth, int dstHeight);
 
-void decodeDevice(utils::InitParameter param, float *src, int srcWidth, int srcHeight, int srcLength, float *dst, int dstWidth, int dstHeight);
+void decodeDevice(InitParameter param, float *src, int srcWidth, int srcHeight, int srcLength, float *dst, int dstWidth, int dstHeight);
 
 // nms fast
-void nmsDeviceV1(utils::InitParameter param, float *src, int srcWidth, int srcHeight, int srcArea);
+void nmsDeviceV1(InitParameter param, float *src, int srcWidth, int srcHeight, int srcArea);
 
 // nms sort
-void nmsDeviceV2(utils::InitParameter param, float *src, int srcWidth, int srcHeight, int srcArea,
+void nmsDeviceV2(InitParameter param, float *src, int srcWidth, int srcHeight, int srcArea,
                  int *idx, float *conf);
 
 void copyWithPaddingDevice(const int &batchSize, float *src, int srcWidth, int srcHeight,
                            float *dst, int dstWidth, int dstHeight, float paddingValue, int padTop, int padLeft);
+
+} // ns_uestc_vhm
+
 #endif // _UESTC_VHM_KERNEL_FUNCTION_H_
