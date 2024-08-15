@@ -26,7 +26,7 @@ static std::string GetSystemTime(std::string const &format) {
 #define PRINT_DEBUG(fmt, args...)                                                  \
     do {                                                                           \
         std::string time_str = ns_uestc_vhm::GetSystemTime("[%Y-%m-%d %H:%M:%S]"); \
-        fprintf(stdout, "%s[UESTC_VHM][DEBUG] " fmt, time_str.c_str(), ##args);               \
+        fprintf(stdout, "%s[UESTC_VHM][DEBUG] " fmt, time_str.c_str(), ##args);    \
     } while (0)
 #endif // PRINT_DEBUG
 
@@ -34,7 +34,7 @@ static std::string GetSystemTime(std::string const &format) {
 #define PRINT_INFO(fmt, args...)                                                   \
     do {                                                                           \
         std::string time_str = ns_uestc_vhm::GetSystemTime("[%Y-%m-%d %H:%M:%S]"); \
-        fprintf(stdout, "%s[UESTC_VHM][INFO] " fmt, time_str.c_str(), ##args);                \
+        fprintf(stdout, "%s[UESTC_VHM][INFO] " fmt, time_str.c_str(), ##args);     \
     } while (0)
 #endif // PRINT_INFO
 
@@ -42,7 +42,7 @@ static std::string GetSystemTime(std::string const &format) {
 #define PRINT_WARNING(fmt, args...)                                                \
     do {                                                                           \
         std::string time_str = ns_uestc_vhm::GetSystemTime("[%Y-%m-%d %H:%M:%S]"); \
-        fprintf(stdout, "%s[UESTC_VHM][WARNING] " fmt, time_str.c_str(), ##args);             \
+        fprintf(stdout, "%s[UESTC_VHM][WARNING] " fmt, time_str.c_str(), ##args);  \
     } while (0)
 #endif // PRINT_WARNING
 
@@ -50,7 +50,7 @@ static std::string GetSystemTime(std::string const &format) {
 #define PRINT_ERROR(fmt, args...)                                                  \
     do {                                                                           \
         std::string time_str = ns_uestc_vhm::GetSystemTime("[%Y-%m-%d %H:%M:%S]"); \
-        fprintf(stdout, "%s[UESTC_VHM][ERROR] " fmt, time_str.c_str(), ##args);               \
+        fprintf(stdout, "%s[UESTC_VHM][ERROR] " fmt, time_str.c_str(), ##args);    \
     } while (0)
 #endif // PRINT_ERROR
 
@@ -58,7 +58,7 @@ static std::string GetSystemTime(std::string const &format) {
 #define PRINT_FATAL(fmt, args...)                                                  \
     do {                                                                           \
         std::string time_str = ns_uestc_vhm::GetSystemTime("[%Y-%m-%d %H:%M:%S]"); \
-        fprintf(stdout, "%s[UESTC_VHM][FATAL] " fmt, time_str.c_str(), ##args);               \
+        fprintf(stdout, "%s[UESTC_VHM][FATAL] " fmt, time_str.c_str(), ##args);    \
     } while (0)
 #endif // PRINT_FATAL
 

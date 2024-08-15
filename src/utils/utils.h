@@ -2,13 +2,6 @@
 #define _UESTC_VHM_UTILS_H_
 
 #include <sys/unistd.h>
-extern "C" {
-#include <libavformat/avformat.h>
-#include <libavcodec/avcodec.h>
-#include <libavutil/imgutils.h>
-#include <libavutil/opt.h>
-#include <libswscale/swscale.h>
-}
 
 #include "parameter.h"
 
@@ -173,37 +166,6 @@ public:
 private:
     cudaEvent_t start, end;
 };
-
-// class RtmpPusher {
-// public:
-//     RtmpPusher() = default;
-//     ~RtmpPusher();
-//     int32_t Init(std::string const &output_stream_url, cv::VideoCapture const &input_stream);
-//     void Handle(const std::vector<std::vector<utils::Box>> &objectss, const std::vector<std::string> &classNames,
-//                 const int &cvDelayTime, std::vector<cv::Mat> &imgsBatch);
-//     int32_t PushOneFrame(cv::Mat const &dat);
-//     std::string GetUrl() const;
-
-// private:
-//     std::string rtmp_url_{""};
-//     FILE *fp_{nullptr};
-//     // int32_t stream_width{1920};
-//     // int32_t stream_height{1080};
-//     // int32_t stream_fps{30};
-//     // // Open output stream
-//     // AVFormatContext *fmt_ctx{nullptr};
-//     // // Add video stream
-//     // AVStream *video_stream{nullptr};
-//     // // Find video encoder
-//     // AVCodec *codec{nullptr};
-//     // // Open video encoder
-//     // AVCodecContext *codec_ctx{nullptr};
-//     // // Presentation timestamp
-//     // int64_t pts{0};
-
-//     // bool ReadAVPixelFormatId(cv::Mat const &mat, AVPixelFormat &format);
-//     // std::shared_ptr<AVFrame> ConvertToAVFrame(cv::Mat const &mat, AVPixelFormat const &target_format);
-// };
 
 } // utils
 

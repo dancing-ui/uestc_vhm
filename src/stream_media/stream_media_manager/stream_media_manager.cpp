@@ -9,7 +9,6 @@ StreamMediaManager::~StreamMediaManager() {
 
 int32_t StreamMediaManager::Init(Config const &cfg) {
     int32_t ret{0};
-    ModelCfgItem model_item{cfg.opt_.param, cfg.opt_.model};
     // parse rtmp config
     for (auto &&rtmp_item : cfg.stream_media_cfg_items_) {
         if (!rtmp_item.is_enable || rtmp_item.type != "rtmp") {
@@ -29,7 +28,7 @@ int32_t StreamMediaManager::Init(Config const &cfg) {
                 PRINT_ERROR("create rtmp's stream_media_driver failed\n");
                 return -1;
             }
-            ret = stream_media_driver->Init(rtmp_item, model_item);
+            ret = stream_media_driver->Init(rtmp_item, cfg.model_cfg_item_);
             if (ret < 0) {
                 PRINT_ERROR("init rtmp's stream_media_driver failed, ret=%d\n", ret);
                 return -1;

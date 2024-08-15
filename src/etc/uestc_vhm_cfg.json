@@ -10,5 +10,13 @@
             "dst_width": 640,
             "dst_height": 640
         }
-    ]
+    ],
+    "model": {
+        "dst_width": 640,
+        "dst_height": 640,
+        "path": "/home/xy/work/tensorrt-alpha/data/yolov8/yolov8n.trt",
+        "batch": 4,
+        "save_dir": "/tmp/uestc_vhm_save_dir",
+        "show": false
+    }
 }

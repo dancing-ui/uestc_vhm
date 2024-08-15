@@ -8,6 +8,9 @@ RtmpHandler::~RtmpHandler() {
     if (fp_ != nullptr) {
         fclose(fp_);
     }
+    if (capture_.isOpened()) {
+        capture_.release();
+    }
 }
 int32_t RtmpHandler::Init(StreamMediaCfgItem const &stream_media_cfg, ModelCfgItem const &model_cfg) {
     int32_t ret{0};
@@ -19,8 +22,7 @@ int32_t RtmpHandler::Init(StreamMediaCfgItem const &stream_media_cfg, ModelCfgIt
     InitModelParameters(stream_media_cfg, model_cfg);
     capture_.open(stream_media_cfg_.in);
     if (!capture_.isOpened()) {
-        PRINT_ERROR("open rtmp's stream failed\n");
-        return -1;
+        static_cast<void>(ReconnectCamera());
     }
     if (!utils::setInputStream(source_, image_path_, video_path_, camera_id_,
                                capture_, total_batches_, delay_time_, model_cfg_.param)) {
@@ -38,33 +40,9 @@ int32_t RtmpHandler::Init(StreamMediaCfgItem const &stream_media_cfg, ModelCfgIt
         PRINT_ERROR("init model_handler_ failed, ret=%d\n", ret);
         return -1;
     }
-    std::stringstream command;
-    command << "ffmpeg ";
-    // infile options
-    command << "-y "               // overwrite output files
-            << "-an "              // close the audio output
-            << "-hide_banner "     // close the ffmpeg's version info
-            << "-f rawvideo "      // force format to rawvideo
-            << "-vcodec rawvideo " // force video rawvideo ('copy' to copy stream)
-            << "-pix_fmt bgr24 "   // set pixel format to bgr24
-            << "-s "               // set frame size (WxH or abbreviation)
-            << std::to_string(int(capture_.get(3)))
-            << "x"
-            << std::to_string(int(capture_.get(4)))
-            << " -r  " // set frame rate (Hz value, fraction or abbreviation)
-            << std::to_string(int(capture_.get(5)));
-    command << " -i - "; //
-
-    // outfile options
-    command << "-vcodec libx264 "   // Hyper fast Audio and Video encoder
-            << " -pix_fmt yuv420p " // set pixel format to yuv420p
-            //<< "-preset ultrafast " // set the libx264 encoding preset to ultrafast
-            << "-f flv " // force format to flv
-                         //   << " -flvflags no_duration_filesize "
-            << stream_media_cfg_.out;
-    fp_ = popen(command.str().c_str(), "w");
-    if (fp_ == nullptr) {
-        PRINT_ERROR("open rtmp's stream failed, cmd=%s\n", command.str().c_str());
+    ret = OpenOutputStream();
+    if (ret < 0) {
+        PRINT_ERROR("open rtmp's stream failed, ret=%d\n", ret);
         return -1;
     }
     return 0;
@@ -73,31 +51,20 @@ int32_t RtmpHandler::Init(StreamMediaCfgItem const &stream_media_cfg, ModelCfgIt
 int32_t RtmpHandler::Start() {
     int32_t ret{0};
     cv::Mat frame;
+    cv::Mat resized_frame;
     std::vector<cv::Mat> imgs_batch;
     imgs_batch.reserve(model_cfg_.param.batch_size);
     uint64_t batch_nums = 0;
-    while (is_finished_.load() == false && capture_.isOpened()) {
-        if (batch_nums >= total_batches_ && source_ != utils::InputStream::CAMERA) {
-            break;
-        }
-        if (imgs_batch.size() < model_cfg_.param.batch_size) // get input
-        {
-            if (source_ != utils::InputStream::IMAGE) {
-                capture_.read(frame);
-            }
-
-            if (frame.empty()) {
-                sample::gLogWarning << "no more video or camera frame" << std::endl;
-                ret = RawDataInput(imgs_batch, batch_nums);
-                if (ret < 0) {
-                    PRINT_ERROR("RawDataInput failed, ret=%d\n", ret);
-                    return -1;
-                }
-                imgs_batch.clear();
-                batch_nums++;
-                break;
+    while (is_finished_.load() == false) {
+        if (imgs_batch.size() < model_cfg_.param.batch_size) { // get input
+            if (capture_.read(frame)) {
+                cv::resize(frame, resized_frame, output_size_, 0, 0, cv::INTER_LINEAR);
+                imgs_batch.emplace_back(resized_frame.clone());
             } else {
-                imgs_batch.emplace_back(frame.clone());
+                static_cast<void>(ReconnectCamera());
+                imgs_batch.clear();
+                batch_nums = 0;
+                continue;
             }
         } else {
             ret = RawDataInput(imgs_batch, batch_nums);
@@ -109,7 +76,7 @@ int32_t RtmpHandler::Start() {
             batch_nums++;
         }
     }
-    PRINT_INFO("rtmp begin to exit, handled_batch_nums_=%lu, batch_nums=%lu\n", handled_batch_nums_, batch_nums);
+    PRINT_INFO("rtmp exiting, stream_id=%d\n", stream_media_cfg_.id);
     return 0;
 }
 
@@ -125,12 +92,11 @@ void RtmpHandler::InitModelParameters(StreamMediaCfgItem const &stream_media_cfg
     // model_cfg_.param.class_names = utils::dataSets::voc20;
     model_cfg_.param.num_class = 80; // for coco
     // model_cfg_.param.num_class = 20; // for voc2012
-    // model_cfg_.param.batch_size = model_cfg.param.batch_size;
-    model_cfg_.param.dst_h = stream_media_cfg.dst_height;
-    model_cfg_.param.dst_w = stream_media_cfg.dst_width;
     model_cfg_.param.input_output_names = {"images", "output0"};
     // model_cfg_.param.conf_thresh = 0.25f;
     // model_cfg_.param.iou_thresh = 0.45f;
+    model_cfg_.param.src_w = output_size_.width = stream_media_cfg_.dst_width;
+    model_cfg_.param.src_h = output_size_.height = stream_media_cfg_.dst_height;
 }
 
 int32_t RtmpHandler::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums) {
@@ -189,9 +155,8 @@ int32_t RtmpHandler::HandledDataOutput(std::vector<std::vector<utils::Box>> cons
             PRINT_ERROR("push one frame failed, ret=%d\n", ret);
             return -1;
         }
-        cv::waitKey(delay_time_);
+        // sleep(delay_time_);
     }
-    handled_batch_nums_++;
     return 0;
 }
 
@@ -200,6 +165,63 @@ int32_t RtmpHandler::PushOneFrame(cv::Mat const &frame) {
     size_t pushed_len = fwrite(frame.data, sizeof(char), frame.total() * frame.elemSize(), fp_);
     if (pushed_len != total_len) {
         PRINT_ERROR("push one frame incompleted, total_len=%lu, pushed_len=%lu\n", total_len, pushed_len);
+        return -1;
+    }
+    return 0;
+}
+
+int32_t RtmpHandler::ReconnectCamera() {
+    int32_t ret{0};
+    uint64_t retry_nums{0};
+    cv::Mat frame;
+    while (true) {
+        capture_.open(stream_media_cfg_.in);
+        if (capture_.read(frame)) {
+            break;
+        }
+        retry_nums++;
+        PRINT_INFO("trying to reconnect %s, retry_nums=%lu\n", stream_media_cfg_.in.c_str(), retry_nums);
+    }
+    PRINT_INFO("reconnecting to %s succeeded, total_retry_nums=%lu\n", stream_media_cfg_.in.c_str(), retry_nums);
+    ret = OpenOutputStream();
+    if (ret < 0) {
+        PRINT_ERROR("open rtmp's output stream failed, ret=%d\n", ret);
+        return -1;
+    }
+    return 0;
+}
+
+int32_t RtmpHandler::OpenOutputStream() {
+    if (fp_ != nullptr) {
+        fclose(fp_);
+    }
+    std::stringstream command;
+    command << "ffmpeg ";
+    // infile options
+    command << "-y "               // overwrite output files
+            << "-an "              // close the audio output
+            << "-hide_banner "     // close the ffmpeg's version info
+            << "-f rawvideo "      // force format to rawvideo
+            << "-vcodec rawvideo " // force video rawvideo ('copy' to copy stream)
+            << "-pix_fmt bgr24 "   // set pixel format to bgr24
+            << "-s "               // set frame size (WxH or abbreviation)
+            << std::to_string(output_size_.width)
+            << "x"
+            << std::to_string(output_size_.height)
+            << " -r  " // set frame rate (Hz value, fraction or abbreviation)
+            << std::to_string(int(capture_.get(5)));
+    command << " -i - "; //
+
+    // outfile options
+    command << "-vcodec libx264 "   // Hyper fast Audio and Video encoder
+            << " -pix_fmt yuv420p " // set pixel format to yuv420p
+            //<< "-preset ultrafast " // set the libx264 encoding preset to ultrafast
+            << "-f flv " // force format to flv
+                         //   << " -flvflags no_duration_filesize "
+            << stream_media_cfg_.out;
+    fp_ = popen(command.str().c_str(), "w");
+    if (fp_ == nullptr) {
+        PRINT_ERROR("open rtmp's stream failed, cmd=%s\n", command.str().c_str());
         return -1;
     }
     return 0;

@@ -71,31 +71,27 @@ wasted_time=$(( end_time - start_time ))
 log_info "build end, wasted time: $wasted_time seconds"
 log_info "check the log file($log_path) for build details"
 
-coredump_gen_dir=$(cat /proc/sys/kernel/core_pattern)
-coredump_gen_dir=$(dirname $coredump_gen_dir)
-# build_file="test_$1"
-# build_path="test"
-build_file="uestc_vhm"
-build_path="/home/xy/work/tensorrt-alpha/uestc_vhm/build/src"
-debug_coredump_dir="../coredump"
-rm -rf $debug_coredump_dir/*
+# coredump_gen_dir=$(cat /proc/sys/kernel/core_pattern)
+# coredump_gen_dir=$(dirname $coredump_gen_dir)
+# # build_file="test_$1"
+# # build_path="test"
+# build_file="uestc_vhm"
+# build_path="/home/xy/work/tensorrt-alpha/uestc_vhm/build/src"
+# debug_coredump_dir="../coredump"
+# rm -rf $debug_coredump_dir/*
 
-if [[ -f "$build_path/$build_file" ]]; then
-    $build_path/$build_file --model=/home/xy/work/tensorrt-alpha/data/yolov8/yolov8n.trt \
-    --batch=4 \
-    --config=/home/xy/work/tensorrt-alpha/uestc_vhm/src/etc/uestc_vhm_cfg.json \
-    --save=/tmp/uestc_vhm_save_dir \
-    --show > "./run.log" 2>&1
-    ret=$?
-    log_save_without_time "$(cat "./run.log")"
-    if [[ $ret -ne 0 ]]; then
-        coredump_file=$(ls -l $coredump_gen_dir | grep $build_file | tail -n1 | awk '{print $9}')
-        echo $coredump_file
-        if [[ "$coredump_file" != "" ]]; then
-            cp $coredump_gen_dir/$coredump_file $debug_coredump_dir
-            cp $build_path/$build_file $debug_coredump_dir
-            # gdb $debug_coredump_dir/$build_file $debug_coredump_dir/$coredump_file
-            log_error "runtime error, please check the coredump directory"
-        fi
-    fi
-fi
+# if [[ -f "$build_path/$build_file" ]]; then
+#     $build_path/$build_file --config=/home/xy/work/tensorrt-alpha/uestc_vhm/src/etc/uestc_vhm_cfg.json > "./run.log" 2>&1
+#     ret=$?
+#     log_save_without_time "$(cat "./run.log")"
+#     if [[ $ret -ne 0 ]]; then
+#         coredump_file=$(ls -l $coredump_gen_dir | grep $build_file | tail -n1 | awk '{print $9}')
+#         echo $coredump_file
+#         if [[ "$coredump_file" != "" ]]; then
+#             cp $coredump_gen_dir/$coredump_file $debug_coredump_dir
+#             cp $build_path/$build_file $debug_coredump_dir
+#             # gdb $debug_coredump_dir/$build_file $debug_coredump_dir/$coredump_file
+#             log_error "runtime error, please check the coredump directory"
+#         fi
+#     fi
+# fi

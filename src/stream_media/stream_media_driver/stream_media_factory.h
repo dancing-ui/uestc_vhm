@@ -3,7 +3,6 @@
 
 #include <memory>
 
-#include "config.h"
 #include "stream_media_driver.h"
 
 namespace ns_uestc_vhm {

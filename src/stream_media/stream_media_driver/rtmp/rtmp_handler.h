@@ -27,20 +27,17 @@ public:
                              std::vector<cv::Mat> const &imgsBatch);
     int32_t PushOneFrame(cv::Mat const &frame);
 
-    // int32_t Init(std::string const &output_stream_url, cv::VideoCapture const &input_stream);
-
-    // void Handle(const std::vector<std::vector<utils::Box>> &objectss, const std::vector<std::string> &classNames,
-    //             const int &cvDelayTime, std::vector<cv::Mat> &imgsBatch);
-    // int32_t PushOneFrame(cv::Mat const &dat);
-    // std::string GetUrl() const;
-
 private:
+    int32_t ReconnectCamera();
+    int32_t OpenOutputStream();
+
     utils::InputStream source_{utils::InputStream::CAMERA};
     std::string video_path_;
     std::string image_path_;
     int32_t camera_id_{0};
     int total_batches_{0};
-    int delay_time_{1};
+    int delay_time_{0};
+    cv::Size output_size_;
 
     cv::VideoCapture capture_;
 
@@ -54,24 +51,6 @@ private:
     ModelHandleCb target_data_cb_;
 
     std::atomic<bool> is_finished_{false};
-
-    uint64_t handled_batch_nums_{0};
-    // int32_t stream_width{1920};
-    // int32_t stream_height{1080};
-    // int32_t stream_fps{30};
-    // // Open output stream
-    // AVFormatContext *fmt_ctx{nullptr};
-    // // Add video stream
-    // AVStream *video_stream{nullptr};
-    // // Find video encoder
-    // AVCodec *codec{nullptr};
-    // // Open video encoder
-    // AVCodecContext *codec_ctx{nullptr};
-    // // Presentation timestamp
-    // int64_t pts{0};
-
-    // bool ReadAVPixelFormatId(cv::Mat const &mat, AVPixelFormat &format);
-    // std::shared_ptr<AVFrame> ConvertToAVFrame(cv::Mat const &mat, AVPixelFormat const &target_format);
 };
 
 } // ns_uestc_vhm

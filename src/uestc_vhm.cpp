@@ -8,13 +8,11 @@
 #include "config.h"
 #include "stream_media.h"
 
-static ns_uestc_vhm::StreamMedia g_stream_media;
-
-static std::atomic<bool> is_finished{false};
+static std::atomic<bool> g_is_finished{false};
 
 static void SignalHandler(int signum) {
     PRINT_INFO("catch signal=%d, exiting...\n", signum);
-    is_finished.store(true);
+    g_is_finished.store(true);
 }
 
 int main(int argc, char **argv) {
@@ -41,22 +39,33 @@ int main(int argc, char **argv) {
         PRINT_ERROR("parse config failed, ret=%d\n", ret);
         return -1;
     }
-    ret = g_stream_media.Init(cfg);
-    if (ret < 0) {
-        PRINT_ERROR("init g_stream_media failed, ret=%d\n", ret);
+    std::unique_ptr<ns_uestc_vhm::StreamMedia> stream_media = std::make_unique<ns_uestc_vhm::StreamMedia>();
+    if (stream_media.get() == nullptr) {
+        PRINT_ERROR("create stream_media failed\n");
         return -1;
     }
-    ret = g_stream_media.Start();
+    ret = stream_media->Init(cfg);
     if (ret < 0) {
-        PRINT_ERROR("start g_stream_media failed, ret=%d\n", ret);
+        PRINT_ERROR("init stream_media failed, ret=%d\n", ret);
         return -1;
     }
-    while (is_finished.load() == false) {
+    ret = stream_media->Start();
+    if (ret < 0) {
+        PRINT_ERROR("start stream_media failed, ret=%d\n", ret);
+        return -1;
+    }
+    // int32_t wait_time{10};
+    // int32_t cur_time{0};
+    while (g_is_finished.load() == false) {
+        // if(cur_time >= wait_time) {
+        //     break;
+        // }
         sleep(1);
+        // cur_time++;
     }
-    ret = g_stream_media.Stop();
+    ret = stream_media->Stop();
     if (ret < 0) {
-        PRINT_ERROR("stop g_stream_media failed, ret=%d\n", ret);
+        PRINT_ERROR("stop stream_media failed, ret=%d\n", ret);
         return -1;
     }
     PRINT_INFO("end app(uestc_vhm)\n");

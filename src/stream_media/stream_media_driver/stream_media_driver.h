@@ -1,7 +1,7 @@
 #ifndef _UESTC_VHM_STREAM_MEDIA_DRIVER_H_
 #define _UESTC_VHM_STREAM_MEDIA_DRIVER_H_
 
-#include "config.h"
+#include "parameter.h"
 
 namespace ns_uestc_vhm {
 class StreamMediaDriver {

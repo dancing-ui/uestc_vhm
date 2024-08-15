@@ -32,10 +32,25 @@ struct InitParameter {
     bool is_show{false};
     bool is_save{false};
 };
+struct StreamMediaCfgItem {
+    int32_t id;
+    bool is_enable;
+    std::string type;
+    std::string name;
+    std::string in;
+    std::string out;
+    int32_t dst_width;
+    int32_t dst_height;
+};
 
-struct ParamOpt {
+struct ModelCfgItem {
     InitParameter param;
     std::string model;
+};
+
+struct ParamOpt {
+    // InitParameter param;
+    // std::string model;
     std::string config;
 };
 

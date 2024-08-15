@@ -9,22 +9,6 @@
 
 namespace ns_uestc_vhm {
 
-struct StreamMediaCfgItem {
-    int32_t id;
-    bool is_enable;
-    std::string type;
-    std::string name;
-    std::string in;
-    std::string out;
-    int32_t dst_width;
-    int32_t dst_height;
-};
-
-struct ModelCfgItem {
-    InitParameter param;
-    std::string model;
-};
-
 class Config {
 public:
     Config() = default;
@@ -38,6 +22,7 @@ public:
     int32_t Parse();
 
     ParamOpt opt_;
+    ModelCfgItem model_cfg_item_;
     std::vector<StreamMediaCfgItem> stream_media_cfg_items_;
 };
 

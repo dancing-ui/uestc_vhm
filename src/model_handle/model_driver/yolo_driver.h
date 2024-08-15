@@ -2,7 +2,6 @@
 #define _UESTC_VHM_YOLO_H_
 #include "utils.h"
 #include "kernel_function.h"
-#include "config.h"
 #include "model_handle_common.h"
 
 namespace ns_uestc_vhm {
