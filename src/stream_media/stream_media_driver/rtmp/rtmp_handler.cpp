@@ -22,28 +22,28 @@ int32_t RtmpHandler::Init(StreamMediaCfgItem const &stream_media_cfg, ModelCfgIt
     InitModelParameters(stream_media_cfg, model_cfg);
     capture_.open(stream_media_cfg_.in);
     if (!capture_.isOpened()) {
-        PRINT_ERROR("open rtmp's stream failed\n");
+        PRINT_ERROR("open rtmp's stream failed, stream_id=%d\n", stream_media_cfg_.id);
         return -1;
     }
     if (!utils::setInputStream(source_, image_path_, video_path_, camera_id_,
                                capture_, total_batches_, delay_time_, model_cfg_.param)) {
-        PRINT_ERROR("set rtmp's stream failed\n");
+        PRINT_ERROR("set rtmp's stream failed, stream_id=%d\n", stream_media_cfg_.id);
         return -1;
     }
     // init model
     model_handler_ = std::make_unique<ModelHandle>();
     if (model_handler_.get() == nullptr) {
-        PRINT_ERROR("create model_handler_ failed\n");
+        PRINT_ERROR("create model_handler_ failed, stream_id=%d\n", stream_media_cfg_.id);
         return -1;
     }
     ret = model_handler_->Init(model_cfg_);
     if (ret < 0) {
-        PRINT_ERROR("init model_handler_ failed, ret=%d\n", ret);
+        PRINT_ERROR("init model_handler_ failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
         return -1;
     }
     ret = OpenOutputStream();
     if (ret < 0) {
-        PRINT_ERROR("open rtmp's stream failed, ret=%d\n", ret);
+        PRINT_ERROR("open rtmp's stream failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
         return -1;
     }
     return 0;
@@ -70,7 +70,7 @@ int32_t RtmpHandler::Start() {
         } else {
             ret = RawDataInput(imgs_batch, batch_nums);
             if (ret < 0) {
-                PRINT_ERROR("RawDataInput failed, ret=%d\n", ret);
+                PRINT_ERROR("RawDataInput failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
                 return -1;
             }
             imgs_batch.clear();
@@ -104,7 +104,7 @@ int32_t RtmpHandler::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t cons
     int32_t ret{0};
     ret = model_handler_->RawDataInput(imgs_batch, batch_nums, target_data_cb_);
     if (ret < 0) {
-        PRINT_ERROR("RawDataInput failed, ret=%d\n", ret);
+        PRINT_ERROR("RawDataInput failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
         return -1;
     }
     return 0;
@@ -153,7 +153,7 @@ int32_t RtmpHandler::HandledDataOutput(std::vector<std::vector<utils::Box>> cons
         }
         ret = PushOneFrame(imgsBatch[bi]);
         if (ret < 0) {
-            PRINT_ERROR("push one frame failed, ret=%d\n", ret);
+            PRINT_ERROR("push one frame failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
             return -1;
         }
         // sleep(delay_time_);
@@ -165,7 +165,7 @@ int32_t RtmpHandler::PushOneFrame(cv::Mat const &frame) {
     size_t total_len = frame.total() * frame.elemSize();
     size_t pushed_len = fwrite(frame.data, sizeof(char), frame.total() * frame.elemSize(), fp_);
     if (pushed_len != total_len) {
-        PRINT_ERROR("push one frame incompleted, total_len=%lu, pushed_len=%lu\n", total_len, pushed_len);
+        PRINT_ERROR("push one frame incompleted, total_len=%lu, pushed_len=%lu, stream_id=%d\n", total_len, pushed_len, stream_media_cfg_.id);
         return -1;
     }
     return 0;
@@ -181,16 +181,16 @@ int32_t RtmpHandler::ReconnectCamera() {
             break;
         }
         retry_nums++;
-        PRINT_INFO("trying to reconnect %s, retry_nums=%lu\n", stream_media_cfg_.in.c_str(), retry_nums);
+        PRINT_INFO("trying to reconnect %s, retry_nums=%lu, stream_id=%d\n", stream_media_cfg_.in.c_str(), retry_nums, stream_media_cfg_.id);
         sleep(5);
     }
     if(is_finished_.load() == true) {
         return 0;
     }
-    PRINT_INFO("reconnecting to %s succeeded, total_retry_nums=%lu\n", stream_media_cfg_.in.c_str(), retry_nums);
+    PRINT_INFO("reconnecting to %s succeeded, total_retry_nums=%lu, stream_id=%d\n", stream_media_cfg_.in.c_str(), retry_nums, stream_media_cfg_.id);
     ret = OpenOutputStream();
     if (ret < 0) {
-        PRINT_ERROR("open rtmp's output stream failed, ret=%d\n", ret);
+        PRINT_ERROR("open rtmp's output stream failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
         return -1;
     }
     return 0;
@@ -226,7 +226,7 @@ int32_t RtmpHandler::OpenOutputStream() {
             << stream_media_cfg_.out;
     fp_ = popen(command.str().c_str(), "w");
     if (fp_ == nullptr) {
-        PRINT_ERROR("open rtmp's stream failed, cmd=%s\n", command.str().c_str());
+        PRINT_ERROR("open rtmp's stream failed, cmd=%s, stream_id=%d\n", command.str().c_str(), stream_media_cfg_.id);
         return -1;
     }
     return 0;

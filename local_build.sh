@@ -50,7 +50,8 @@ cd build
 # cmake -DTEST_FILE_NAME=test_${1} --debug-trycompile .. 
 # cmake -DTEST_FILE_NAME=test_${1} .. 
 start_time=$(date +'%s')
-cmake -DBUILD_PLATFORM=x86_64 .. 
+cmake -DBUILD_PLATFORM=x86_64 .. > "./cmake.log" 2>&1
+log_save_without_time "$(cat "./cmake.log")"
 ret=$?
 if [[ $ret -ne 0 ]]; then
     log_error "cmake failed, ret=$ret"
