@@ -37,30 +37,27 @@ log_error() {
 }
 
 log_info "build begin"
-
-if [[ -d "build" ]]; then
-    rm -rf build
-fi
-
-mkdir -p build
-cd build
-
-# cmake -DTEST_FILE_NAME=test_${1} -DCMAKE_C_COMPILER="/usr/bin/clang" -DCMAKE_CXX_COMPILER="/usr/bin/clang++" .. 
-# --debug-trycompile可以用于查看check_cxx_symbol_exists的查找情况
-# cmake -DTEST_FILE_NAME=test_${1} --debug-trycompile .. 
-# cmake -DTEST_FILE_NAME=test_${1} .. 
 start_time=$(date +'%s')
-cmake -DBUILD_PLATFORM=x86_64 .. > "./cmake.log" 2>&1
-log_save_without_time "$(cat "./cmake.log")"
+
+# cmake
+cmake -S . -B build \
+-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
+-DBUILD_PLATFORM=x86_64 \
+-DCMAKE_BUILD_TYPE=Release \
+> "/tmp/uestc_vhm_cmake.log" 2>&1
 ret=$?
+log_save_without_time "$(cat "/tmp/uestc_vhm_cmake.log")"
 if [[ $ret -ne 0 ]]; then
     log_error "cmake failed, ret=$ret"
     exit 1
 fi
-
-make -j20 > "./make.log" 2>&1
+# make
+cmake --build build \
+--target format \
+-- -j $(nproc) \
+> "/tmp/uestc_vhm_make.log" 2>&1
 ret=$?
-log_save_without_time "$(cat "./make.log")"
+log_save_without_time "$(cat "/tmp/uestc_vhm_make.log")"
 if [[ $ret -ne 0 ]]; then
     log_error "make failed, ret=$ret"
     exit 1
@@ -68,7 +65,6 @@ fi
 
 end_time=$(date +'%s')
 wasted_time=$(( end_time - start_time ))
-
 log_info "build end, wasted time: $wasted_time seconds"
 log_info "check the log file($log_path) for build details"
 

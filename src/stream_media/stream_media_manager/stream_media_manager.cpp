@@ -13,7 +13,7 @@ int32_t StreamMediaManager::Init(Config const &cfg) {
     for (auto &&rtmp_item : cfg.stream_media_cfg_items_) {
         if (!rtmp_item.is_enable || rtmp_item.type != "rtmp") {
             continue;
-        } 
+        }
         if (stream_media_drivers_.count(rtmp_item.id)) {
             PRINT_ERROR("repeated rtmp's id(%d)\n", rtmp_item.id);
             return -1;
@@ -72,7 +72,7 @@ int32_t StreamMediaManager::Stop() {
         }
         PRINT_INFO("exit thread success, stream_id=%d\n", iter->first);
     }
-    if(ret < 0) {
+    if (ret < 0) {
         return -1;
     }
     return 0;

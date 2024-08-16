@@ -80,9 +80,9 @@ int32_t YOLOV8::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &ba
     sample::gLogInfo <<
         //"copy time = " << t0 / param.batch_size << "; "
         "preprocess time = " << t1 / cfg_.param.batch_size << "; "
-                                                         "infer time = "
+                                                              "infer time = "
                      << t2 / cfg_.param.batch_size << "; "
-                                                 "postprocess time = "
+                                                      "postprocess time = "
                      << t3 / cfg_.param.batch_size << std::endl;
 
     // if (cfg_.param.is_show)
@@ -92,7 +92,7 @@ int32_t YOLOV8::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &ba
     // rtmp_pusher.Handle(yolo.getObjectss(), param.class_names, delayTime, imgs_batch);
     if (handle_cb != nullptr) {
         ret = handle_cb(getObjectss(), cfg_.param.class_names, imgs_batch);
-        if(ret < 0) {
+        if (ret < 0) {
             return -1;
         }
     }

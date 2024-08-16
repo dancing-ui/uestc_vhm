@@ -17,7 +17,7 @@ public:
 
 public:
     virtual int32_t Init();
-    virtual int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const& handle_cb);
+    virtual int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const &handle_cb);
     virtual void check();
     virtual void copy(const std::vector<cv::Mat> &imgsBatch);
     virtual void preprocess(const std::vector<cv::Mat> &imgsBatch);

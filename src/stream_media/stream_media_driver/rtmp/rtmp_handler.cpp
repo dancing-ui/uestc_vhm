@@ -184,7 +184,7 @@ int32_t RtmpHandler::ReconnectCamera() {
         PRINT_INFO("trying to reconnect %s, retry_nums=%lu, stream_id=%d\n", stream_media_cfg_.in.c_str(), retry_nums, stream_media_cfg_.id);
         sleep(5);
     }
-    if(is_finished_.load() == true) {
+    if (is_finished_.load() == true) {
         return 0;
     }
     PRINT_INFO("reconnecting to %s succeeded, total_retry_nums=%lu, stream_id=%d\n", stream_media_cfg_.in.c_str(), retry_nums, stream_media_cfg_.id);

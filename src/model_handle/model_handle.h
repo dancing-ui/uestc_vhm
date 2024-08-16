@@ -14,7 +14,7 @@ public:
     ModelHandle &operator=(ModelHandle const &) = default;
 
     int32_t Init(ModelCfgItem const &cfg);
-    int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const& handle_cb);
+    int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const &handle_cb);
 
 private:
     std::unique_ptr<ModelManager> model_manager_;

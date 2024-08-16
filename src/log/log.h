@@ -2,6 +2,7 @@
 #define _UESTC_VHM_LOG_H_
 
 #include <cstdio>
+#include <string>
 #include <time.h>
 
 namespace ns_uestc_vhm {

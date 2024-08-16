@@ -1,0 +1,13 @@
+file (GLOB_RECURSE ALL_SRC_FILES ${CMAKE_SOURCE_DIR}/src/*.h ${CMAKE_SOURCE_DIR}/src/*.cpp ${CMAKE_SOURCE_DIR}/test/*.h ${CMAKE_SOURCE_DIR}/test/*.cpp)
+message(STATUS "ALL_SRC_FILES=${ALL_SRC_FILES}")
+foreach (tidy_target ${ALL_SRC_FILES})
+  get_filename_component (basename ${tidy_target} NAME)
+  get_filename_component (dirname ${tidy_target} DIRECTORY)
+  get_filename_component (basedir ${dirname} NAME)
+  set (tidy_target_name "${basedir}__${basename}")
+  set (tidy_command clang-tidy --quiet -header-filter=.* -p=${PROJECT_BINARY_DIR} ${tidy_target})
+  add_custom_target (tidy_${tidy_target_name} ${tidy_command})
+  list (APPEND ALL_TIDY_TARGETS tidy_${tidy_target_name})
+endforeach (tidy_target)
+
+add_custom_target (tidy DEPENDS ${ALL_TIDY_TARGETS})

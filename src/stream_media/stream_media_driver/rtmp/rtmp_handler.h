@@ -23,8 +23,8 @@ public:
     void InitModelParameters(StreamMediaCfgItem const &stream_media_cfg, ModelCfgItem const &model_cfg);
     int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batchi);
     int32_t HandledDataOutput(std::vector<std::vector<utils::Box>> const &objectss,
-                             std::vector<std::string> const &classNames,
-                             std::vector<cv::Mat> const &imgsBatch);
+                              std::vector<std::string> const &classNames,
+                              std::vector<cv::Mat> const &imgsBatch);
     int32_t PushOneFrame(cv::Mat const &frame);
 
 private:

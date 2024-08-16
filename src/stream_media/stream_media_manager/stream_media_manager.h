@@ -24,7 +24,7 @@ public:
 
 private:
     std::shared_ptr<StreamMediaFactory> stream_media_factory_;
-    std::map<int32_t, std::shared_ptr<std::thread>> stream_media_ths_; 
+    std::map<int32_t, std::shared_ptr<std::thread>> stream_media_ths_;
     std::map<int32_t, std::shared_ptr<StreamMediaDriver>> stream_media_drivers_;
 };
 

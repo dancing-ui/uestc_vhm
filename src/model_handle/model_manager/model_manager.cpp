@@ -26,7 +26,7 @@ int32_t ModelManager::Init(ModelCfgItem const &cfg) {
     return 0;
 }
 
-int32_t ModelManager::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const& handle_cb) {
+int32_t ModelManager::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const &handle_cb) {
     return yolo_driver_->RawDataInput(imgs_batch, batch_nums, handle_cb);
 }
 

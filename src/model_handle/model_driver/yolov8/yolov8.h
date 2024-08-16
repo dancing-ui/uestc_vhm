@@ -13,7 +13,7 @@ public:
     YOLOV8 &operator=(YOLOV8 const &) = default;
 
     int32_t Init() override;
-    int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const& handle_cb) override;
+    int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const &handle_cb) override;
     void preprocess(const std::vector<cv::Mat> &imgsBatch) override;
     void postprocess(const std::vector<cv::Mat> &imgsBatch) override;
 
