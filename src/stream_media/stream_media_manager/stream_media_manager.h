@@ -14,8 +14,10 @@ public:
     StreamMediaManager() = default;
     ~StreamMediaManager();
 
-    StreamMediaManager(StreamMediaManager const &) = default;
-    StreamMediaManager &operator=(StreamMediaManager const &) = default;
+    StreamMediaManager(StreamMediaManager const &) = delete;
+    StreamMediaManager &operator=(StreamMediaManager const &) = delete;
+    StreamMediaManager(StreamMediaManager &&) = delete;
+    StreamMediaManager &operator=(StreamMediaManager &&) = delete;
 
     int32_t Init(Config const &cfg);
     int32_t Start();

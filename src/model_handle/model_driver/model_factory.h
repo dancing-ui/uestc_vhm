@@ -14,6 +14,8 @@ public:
 
     ModelFactory(ModelFactory const &) = default;
     ModelFactory &operator=(ModelFactory const &) = default;
+    ModelFactory(ModelFactory &&) = default;
+    ModelFactory &operator=(ModelFactory &&) = default;
 
     virtual std::shared_ptr<yolo::YOLO> CreateYoloObj(ModelCfgItem const &cfg);
 };
@@ -25,6 +27,8 @@ public:
 
     YoloFactory(YoloFactory const &) = default;
     YoloFactory &operator=(YoloFactory const &) = default;
+    YoloFactory(YoloFactory &&) = default;
+    YoloFactory &operator=(YoloFactory &&) = default;
 
     std::shared_ptr<yolo::YOLO> CreateYoloObj(ModelCfgItem const &cfg) override;
 };

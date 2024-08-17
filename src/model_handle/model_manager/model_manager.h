@@ -12,6 +12,8 @@ public:
 
     ModelManager(ModelManager const &) = default;
     ModelManager &operator=(ModelManager const &) = default;
+    ModelManager(ModelManager &&) = default;
+    ModelManager &operator=(ModelManager &&) = default;
 
     int32_t Init(ModelCfgItem const &cfg);
     int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const &handle_cb);

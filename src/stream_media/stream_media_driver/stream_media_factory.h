@@ -14,6 +14,8 @@ public:
 
     StreamMediaFactory(StreamMediaFactory const &) = default;
     StreamMediaFactory &operator=(StreamMediaFactory const &) = default;
+    StreamMediaFactory(StreamMediaFactory &&) = default;
+    StreamMediaFactory &operator=(StreamMediaFactory &&) = default;
 
     virtual std::shared_ptr<StreamMediaDriver> Create() = 0;
 };
@@ -25,6 +27,8 @@ public:
 
     RtmpHandlerFactory(RtmpHandlerFactory const &) = default;
     RtmpHandlerFactory &operator=(RtmpHandlerFactory const &) = default;
+    RtmpHandlerFactory(RtmpHandlerFactory &&) = default;
+    RtmpHandlerFactory &operator=(RtmpHandlerFactory &&) = default;
 
     std::shared_ptr<StreamMediaDriver> Create() override;
 };

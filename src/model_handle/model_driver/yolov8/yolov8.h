@@ -9,8 +9,10 @@ public:
     YOLOV8(ModelCfgItem const &cfg);
     ~YOLOV8();
 
-    YOLOV8(YOLOV8 const &) = default;
-    YOLOV8 &operator=(YOLOV8 const &) = default;
+    YOLOV8(YOLOV8 const &) = delete;
+    YOLOV8 &operator=(YOLOV8 const &) = delete;
+    YOLOV8(YOLOV8 &&) = delete;
+    YOLOV8 &operator=(YOLOV8 &&) = delete;
 
     int32_t Init() override;
     int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const &handle_cb) override;

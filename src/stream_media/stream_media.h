@@ -9,8 +9,10 @@ public:
     StreamMedia() = default;
     ~StreamMedia();
 
-    StreamMedia(StreamMedia const &) = default;
-    StreamMedia &operator=(StreamMedia const &) = default;
+    StreamMedia(StreamMedia const &) = delete;
+    StreamMedia &operator=(StreamMedia const &) = delete;
+    StreamMedia(StreamMedia &&) = delete;
+    StreamMedia &operator=(StreamMedia &&) = delete;
 
     int32_t Init(Config const &cfg);
     int32_t Start();

@@ -10,8 +10,10 @@ public:
     ModelHandle() = default;
     ~ModelHandle();
 
-    ModelHandle(ModelHandle const &) = default;
-    ModelHandle &operator=(ModelHandle const &) = default;
+    ModelHandle(ModelHandle const &) = delete;
+    ModelHandle &operator=(ModelHandle const &) = delete;
+    ModelHandle(ModelHandle &&) = delete;
+    ModelHandle &operator=(ModelHandle &&) = delete;
 
     int32_t Init(ModelCfgItem const &cfg);
     int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const &handle_cb);

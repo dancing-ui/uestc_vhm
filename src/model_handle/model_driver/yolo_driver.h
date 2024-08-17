@@ -10,10 +10,12 @@ namespace yolo {
 class YOLO {
 public:
     YOLO(ModelCfgItem const &cfg);
-    ~YOLO();
+    virtual ~YOLO();
 
-    YOLO(YOLO const &) = default;
-    YOLO &operator=(YOLO const &) = default;
+    YOLO(YOLO const &) = delete;
+    YOLO &operator=(YOLO const &) = delete;
+    YOLO(YOLO &&) = delete;
+    YOLO &operator=(YOLO &&) = delete;
 
 public:
     virtual int32_t Init();

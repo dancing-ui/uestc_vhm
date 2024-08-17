@@ -23,7 +23,7 @@ int32_t StreamMediaManager::Init(Config const &cfg) {
                 PRINT_ERROR("create rtmp's stream_media_factory_ failed\n");
                 return -1;
             }
-            std::shared_ptr<StreamMediaDriver> stream_media_driver = std::move(stream_media_factory_->Create());
+            std::shared_ptr<StreamMediaDriver> stream_media_driver = stream_media_factory_->Create();
             if (stream_media_driver.get() == nullptr) {
                 PRINT_ERROR("create rtmp's stream_media_driver failed\n");
                 return -1;

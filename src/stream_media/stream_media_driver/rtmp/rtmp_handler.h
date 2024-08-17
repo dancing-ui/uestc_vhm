@@ -14,8 +14,10 @@ public:
     RtmpHandler() = default;
     ~RtmpHandler();
 
-    RtmpHandler(RtmpHandler const &) = default;
-    RtmpHandler &operator=(RtmpHandler const &) = default;
+    RtmpHandler(RtmpHandler const &) = delete;
+    RtmpHandler &operator=(RtmpHandler const &) = delete;
+    RtmpHandler(RtmpHandler &&) = delete;
+    RtmpHandler &operator=(RtmpHandler &&) = delete;
 
     int32_t Init(StreamMediaCfgItem const &stream_media_cfg, ModelCfgItem const &model_cfg) override;
     int32_t Start() override;

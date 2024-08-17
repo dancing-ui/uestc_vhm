@@ -17,6 +17,8 @@ public:
 
     Config(Config const &) = default;
     Config &operator=(Config const &) = default;
+    Config(Config &&) = default;
+    Config &operator=(Config &&) = default;
 
     int32_t Init();
     int32_t Parse();
