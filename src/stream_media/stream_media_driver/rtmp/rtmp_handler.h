@@ -47,7 +47,6 @@ private:
     ModelCfgItem model_cfg_;
 
     std::unique_ptr<ModelHandle> model_handler_;
-    std::string rtmp_url_{""};
     FILE *fp_{nullptr};
 
     ModelHandleCb target_data_cb_;

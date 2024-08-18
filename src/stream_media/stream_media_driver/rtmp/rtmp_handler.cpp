@@ -6,7 +6,7 @@ namespace ns_uestc_vhm {
 
 RtmpHandler::~RtmpHandler() {
     if (fp_ != nullptr) {
-        fclose(fp_);
+        pclose(fp_);
     }
     if (capture_.isOpened()) {
         capture_.release();
@@ -163,7 +163,8 @@ int32_t RtmpHandler::HandledDataOutput(std::vector<std::vector<utils::Box>> cons
 
 int32_t RtmpHandler::PushOneFrame(cv::Mat const &frame) {
     size_t total_len = frame.total() * frame.elemSize();
-    size_t pushed_len = fwrite(frame.data, sizeof(char), frame.total() * frame.elemSize(), fp_);
+    size_t pushed_len = fwrite(frame.data, 1, frame.total() * frame.elemSize(), fp_);
+    fflush(fp_);
     if (pushed_len != total_len) {
         PRINT_ERROR("push one frame incompleted, total_len=%lu, pushed_len=%lu, stream_id=%d\n", total_len, pushed_len, stream_media_cfg_.id);
         return -1;
@@ -175,6 +176,7 @@ int32_t RtmpHandler::ReconnectCamera() {
     int32_t ret{0};
     uint64_t retry_nums{0};
     cv::Mat frame;
+    PRINT_INFO("trying to reconnect %s, stream_id=%d\n", stream_media_cfg_.in.c_str(), stream_media_cfg_.id);
     while (is_finished_.load() == false) {
         capture_.open(stream_media_cfg_.in);
         if (capture_.read(frame)) {
@@ -197,8 +199,15 @@ int32_t RtmpHandler::ReconnectCamera() {
 }
 
 int32_t RtmpHandler::OpenOutputStream() {
+    int32_t ret{0};
+    PRINT_INFO("trying to open output stream %s, stream_id=%d\n", stream_media_cfg_.out.c_str(), stream_media_cfg_.id);
     if (fp_ != nullptr) {
-        fclose(fp_);
+        ret = pclose(fp_);
+        if (ret < 0) {
+            PRINT_ERROR("pclose failed, ret=%d\n", ret);
+            return -1;
+        }
+        fp_ = nullptr;
     }
     std::stringstream command;
     command << "ffmpeg ";

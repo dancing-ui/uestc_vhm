@@ -7,15 +7,15 @@
             "name": "unknown",
             "in": "rtmp://127.0.0.1/camera/camera_stream",
             "out": "rtmp://127.0.0.1/yolov8n/yolov8n_stream",
-            "dst_width": 1920,
-            "dst_height": 1080
+            "dst_width": 640,
+            "dst_height": 480
         }
     ],
     "model": {
         "dst_width": 640,
         "dst_height": 640,
         "path": "/home/xy/work/tensorrt-alpha/data/yolov8/yolov8n.trt",
-        "batch": 4,
+        "batch": 8,
         "save_dir": "/tmp/uestc_vhm_save_dir",
         "show": false
     }

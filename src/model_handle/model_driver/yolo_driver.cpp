@@ -100,23 +100,29 @@ int32_t yolo::YOLO::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const
     int32_t ret{0};
     utils::DeviceTimer d_t0;
     copy(imgs_batch);
-    float t0 = d_t0.getUsedTime();
+    double t0 = d_t0.getUsedTime();
     utils::DeviceTimer d_t1;
     preprocess(imgs_batch);
-    float t1 = d_t1.getUsedTime();
+    double t1 = d_t1.getUsedTime();
     utils::DeviceTimer d_t2;
     infer();
-    float t2 = d_t2.getUsedTime();
+    double t2 = d_t2.getUsedTime();
     utils::DeviceTimer d_t3;
     postprocess(imgs_batch);
-    float t3 = d_t3.getUsedTime();
-    sample::gLogInfo <<
-        //"copy time = " << t0 / param.batch_size << "; "
-        "preprocess time = " << t1 / cfg_.param.batch_size << "; "
-                                                              "infer time = "
-                     << t2 / cfg_.param.batch_size << "; "
-                                                      "postprocess time = "
-                     << t3 / cfg_.param.batch_size << std::endl;
+    double t3 = d_t3.getUsedTime();
+    double all_uesd_time{t1 / cfg_.param.batch_size + t2 / cfg_.param.batch_size + t3 / cfg_.param.batch_size};
+    static double max_used_time{0}, min_used_time{INFINITY}, average_used_time{0}, counter{0};
+    counter++;
+    max_used_time = std::max(max_used_time, all_uesd_time);
+    min_used_time = std::min(min_used_time, all_uesd_time);
+    average_used_time = (average_used_time + all_uesd_time) / counter;
+    sample::gLogInfo << "preprocess time = " << t1 / cfg_.param.batch_size << "ms; "
+                     << "infer time = " << t2 / cfg_.param.batch_size << "ms; "
+                     << "postprocess time = " << t3 / cfg_.param.batch_size << "ms; "
+                     << "max time = " << max_used_time << "ms; "
+                     << "min time = " << min_used_time << "ms; "
+                     << "average time = " << average_used_time << "ms;"
+                     << std::endl;
 
     // if (cfg_.param.is_show)
     //     utils::show(getObjectss(), cfg_.param.class_names, delayTime, imgs_batch);

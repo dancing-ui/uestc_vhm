@@ -43,7 +43,7 @@ start_time=$(date +'%s')
 cmake -S . -B build \
 -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
 -DBUILD_PLATFORM=x86_64 \
--DCMAKE_BUILD_TYPE=Debug \
+-DCMAKE_BUILD_TYPE=Release \
 > "/tmp/uestc_vhm_cmake.log" 2>&1
 ret=$?
 log_save_without_time "$(cat "/tmp/uestc_vhm_cmake.log")"
