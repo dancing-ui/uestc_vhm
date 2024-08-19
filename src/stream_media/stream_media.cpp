@@ -1,4 +1,5 @@
 #include "stream_media.h"
+#include "log.h"
 
 namespace ns_uestc_vhm {
 

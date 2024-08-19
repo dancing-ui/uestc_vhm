@@ -33,7 +33,7 @@ static void OptionUsage() {
 }
 
 static void OptionVersion() {
-    PRINT("version: v%d.%d.%d\n", UESTC_VHM_VERSION_MAJOR, UESTC_VHM_VERSION_MINOR, UESTC_VHM_VERSION_REVIS);
+    PRINT_INFO("app uestc_vhm version: v%d.%d.%d\n", UESTC_VHM_VERSION_MAJOR, UESTC_VHM_VERSION_MINOR, UESTC_VHM_VERSION_REVIS);
 }
 
 int32_t ParseOpt(int32_t argc, char **argv, ParamOpt &opt) {
