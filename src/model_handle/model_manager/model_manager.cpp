@@ -16,12 +16,12 @@ int32_t ModelManager::Init(ModelCfgItem const &cfg) {
     yolo_driver_ = model_factory_->CreateYoloObj(cfg);
     if (yolo_driver_.get() == nullptr) {
         PRINT_ERROR("create yolo_driver_ failed\n");
-        return -1;
+        return -2;
     }
     ret = yolo_driver_->Init();
     if (ret < 0) {
         PRINT_ERROR("init yolo_driver_ failed, ret=%d\n", ret);
-        return -1;
+        return -3;
     }
     return 0;
 }

@@ -21,17 +21,17 @@ int32_t StreamMediaManager::Init(Config const &cfg) {
             stream_media_factory_ = std::make_shared<RtmpHandlerFactory>();
             if (stream_media_factory_.get() == nullptr) {
                 PRINT_ERROR("create rtmp's stream_media_factory_ failed\n");
-                return -1;
+                return -2;
             }
             std::shared_ptr<StreamMediaDriver> stream_media_driver = stream_media_factory_->Create();
             if (stream_media_driver.get() == nullptr) {
                 PRINT_ERROR("create rtmp's stream_media_driver failed\n");
-                return -1;
+                return -3;
             }
             ret = stream_media_driver->Init(rtmp_item, cfg.model_cfg_item_);
             if (ret < 0) {
                 PRINT_ERROR("init rtmp's stream_media_driver failed, ret=%d\n", ret);
-                return -1;
+                return -4;
             }
             stream_media_drivers_.insert({rtmp_item.id, stream_media_driver});
         }
@@ -58,10 +58,9 @@ int32_t StreamMediaManager::Stop() {
     int32_t ret{0};
     for (auto iter = stream_media_drivers_.begin(); iter != stream_media_drivers_.end(); iter++) {
         PRINT_INFO("begin to stop driver, stream_id=%d\n", iter->first);
-        int32_t temp_ret = iter->second->Stop();
-        if (temp_ret < 0) {
-            PRINT_ERROR("stop driver failed, stream_id=%d, ret=%d\n", iter->first, temp_ret);
-            ret = -1;
+        ret = iter->second->Stop();
+        if (ret < 0) {
+            PRINT_ERROR("stop driver failed, stream_id=%d, ret=%d\n", iter->first, ret);
         }
         PRINT_INFO("stop driver success, stream_id=%d\n", iter->first);
     }

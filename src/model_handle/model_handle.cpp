@@ -16,7 +16,7 @@ int32_t ModelHandle::Init(ModelCfgItem const &cfg) {
     ret = model_manager_->Init(cfg);
     if (ret < 0) {
         PRINT_ERROR("init model_manager_ failed, ret=%d\n", ret);
-        return -1;
+        return -2;
     }
     return 0;
 }
