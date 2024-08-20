@@ -2,7 +2,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug",
+            "type": "lldb",
+            "request": "launch",
+            "name": "LldbDebug",
+            "program": "${workspaceFolder}/build/${relativeFileDirname}/${fileBasenameNoExtension}",
+            "args": [
+                "--config=/home/xy/work/tensorrt-alpha/uestc_vhm/src/etc/uestc_vhm_cfg.json"
+            ],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "CppDebug",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/${relativeFileDirname}/${fileBasenameNoExtension}",

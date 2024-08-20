@@ -1,6 +1,5 @@
 #include <csignal>
 #include <cstdlib>
-#include <thread>
 #include <atomic>
 
 #include "parameter.h"
