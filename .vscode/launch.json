@@ -9,7 +9,8 @@
             "args": [
                 "--config=/home/xy/work/tensorrt-alpha/uestc_vhm/src/etc/uestc_vhm_cfg.json"
             ],
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "Build",
         },
         {
             "name": "CppDebug",
