@@ -110,18 +110,9 @@ int32_t yolo::YOLO::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const
     utils::DeviceTimer d_t3;
     postprocess(imgs_batch);
     double t3 = d_t3.getUsedTime();
-    double all_uesd_time{t1 / cfg_.param.batch_size + t2 / cfg_.param.batch_size + t3 / cfg_.param.batch_size};
-    static double max_used_time{0}, min_used_time{INFINITY}, average_used_time{0}, counter{0};
-    counter++;
-    max_used_time = std::max(max_used_time, all_uesd_time);
-    min_used_time = std::min(min_used_time, all_uesd_time);
-    average_used_time = (average_used_time + all_uesd_time) / counter;
-    sample::gLogInfo << "preprocess time = " << t1 / cfg_.param.batch_size << "ms; "
+    sample::gLogInfo << "pre_process time = " << t1 / cfg_.param.batch_size << "ms; "
                      << "infer time = " << t2 / cfg_.param.batch_size << "ms; "
-                     << "postprocess time = " << t3 / cfg_.param.batch_size << "ms; "
-                     << "max time = " << max_used_time << "ms; "
-                     << "min time = " << min_used_time << "ms; "
-                     << "average time = " << average_used_time << "ms;"
+                     << "post_process time = " << t3 / cfg_.param.batch_size << "ms; "
                      << std::endl;
 
     // if (cfg_.param.is_show)

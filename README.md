@@ -19,6 +19,6 @@ The goal is to quickly deploy the target detection algorithm model and stream it
 - model: yolov8n
 - batch_size: 8
 - total frames of video: 7500
-- max_model_process_time: 16.6293ms
-- min_model_process_time: 2.19257ms
-- average_model_process_time: 0.00262528ms
+- pre process time: 0.257808ms
+- infer time = 1.93941ms
+- post process time = 0.197888ms
