@@ -21,8 +21,8 @@ int32_t ModelHandle::Init(ModelCfgItem const &cfg) {
     return 0;
 }
 
-int32_t ModelHandle::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const &handle_cb) {
-    return model_manager_->RawDataInput(imgs_batch, batch_nums, handle_cb);
+int32_t ModelHandle::RawDataInput(std::vector<cv::Mat> &imgs_batch, ModelHandleCb const &handle_cb) {
+    return model_manager_->RawDataInput(imgs_batch, handle_cb);
 }
 
 } // ns_uestc_vhm

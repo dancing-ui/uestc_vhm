@@ -1,6 +1,8 @@
 #include <csignal>
+#include <cstdint>
 #include <cstdlib>
 #include <atomic>
+#include <unistd.h>
 
 #include "parameter.h"
 #include "log.h"

@@ -31,6 +31,7 @@ struct InitParameter {
     double font_scale = 0.6;
     bool is_show{false};
     bool is_save{false};
+    std::string model_path;
 };
 struct StreamMediaCfgItem {
     int32_t id;
@@ -43,14 +44,36 @@ struct StreamMediaCfgItem {
     int32_t dst_height;
 };
 
+struct ReidParameter {
+    std::string engine_path;
+    int32_t input_width;
+    int32_t input_height;
+    int32_t output_size;
+    int32_t device_id;
+    int32_t batch_size;
+};
+
+struct DeepSortParameter {
+    int32_t max_age;
+    float iou_threshold;
+    float sim_threshold;
+    bool agnostic;
+};
+
+struct ObjectTrackParameter {
+    DeepSortParameter deepsort_param;
+};
+
 struct ModelCfgItem {
+    // yolo
     InitParameter param;
-    std::string model;
+    // reid
+    ReidParameter reid_param;
+    // object track
+    ObjectTrackParameter object_track_param;
 };
 
 struct ParamOpt {
-    // InitParameter param;
-    // std::string model;
     std::string config;
 };
 

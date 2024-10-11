@@ -4,7 +4,6 @@
 #include <atomic>
 
 #include "stream_media_driver.h"
-#include "common_include.h"
 #include "model_handle.h"
 
 namespace ns_uestc_vhm {
@@ -22,11 +21,9 @@ public:
     int32_t Init(StreamMediaCfgItem const &stream_media_cfg, ModelCfgItem const &model_cfg) override;
     int32_t Start() override;
     int32_t Stop() override;
-    void InitModelParameters(StreamMediaCfgItem const &stream_media_cfg, ModelCfgItem const &model_cfg);
-    int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batchi);
-    int32_t HandledDataOutput(std::vector<std::vector<utils::Box>> const &objectss,
-                              std::vector<std::string> const &classNames,
-                              std::vector<cv::Mat> const &imgsBatch);
+    int32_t InitParameter(StreamMediaCfgItem const &stream_media_cfg, ModelCfgItem const &model_cfg);
+    int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch);
+    int32_t HandledDataOutput(std::vector<std::vector<TrackerRes>> const &objectss, std::vector<cv::Mat> const &imgsBatch);
     int32_t PushOneFrame(cv::Mat const &frame);
 
 private:

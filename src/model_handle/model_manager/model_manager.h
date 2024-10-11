@@ -3,6 +3,8 @@
 
 #include "model_factory.h"
 #include "model_handle_common.h"
+#include "object_track.h"
+#include <memory>
 
 namespace ns_uestc_vhm {
 class ModelManager {
@@ -16,14 +18,13 @@ public:
     ModelManager &operator=(ModelManager &&) = default;
 
     int32_t Init(ModelCfgItem const &cfg);
-    int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const &handle_cb);
-    // int32_t Start();
-    // int32_t Stop();
-    // int32_t Handle();
+    int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, ModelHandleCb const &handle_cb);
 
 private:
     std::shared_ptr<ModelFactory> model_factory_;
     std::shared_ptr<yolo::YOLO> yolo_driver_;
+    std::shared_ptr<reid::REID> reid_driver_;
+    std::shared_ptr<ObjectTrackCtx> object_track_ctx_;
 };
 
 } // ns_uestc_vhm

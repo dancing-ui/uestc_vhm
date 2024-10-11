@@ -13,16 +13,15 @@ YOLOV8::~YOLOV8() {
 
 int32_t YOLOV8::Init() {
     // load model
-    std::vector<unsigned char> trt_file = utils::loadModel(cfg_.model);
+    std::vector<unsigned char> trt_file = utils::loadModel(cfg_.param.model_path);
     if (trt_file.empty()) {
         return -1;
     }
-    std::unique_ptr<nvinfer1::IRuntime> runtime =
-        std::unique_ptr<nvinfer1::IRuntime>(nvinfer1::createInferRuntime(sample::gLogger.getTRTLogger()));
-    if (runtime == nullptr) {
+    this->m_runtime = std::unique_ptr<nvinfer1::IRuntime>(nvinfer1::createInferRuntime(sample::gLogger.getTRTLogger()));
+    if (this->m_runtime == nullptr) {
         return -2;
     }
-    this->m_engine = std::unique_ptr<nvinfer1::ICudaEngine>(runtime->deserializeCudaEngine(trt_file.data(), trt_file.size()));
+    this->m_engine = std::unique_ptr<nvinfer1::ICudaEngine>(this->m_runtime->deserializeCudaEngine(trt_file.data(), trt_file.size()));
 
     if (this->m_engine == nullptr) {
         return -3;
@@ -63,7 +62,7 @@ int32_t YOLOV8::Init() {
     return 0;
 }
 
-int32_t YOLOV8::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const &handle_cb) {
+int32_t YOLOV8::BatchInference(std::vector<cv::Mat> &imgs_batch) {
     int32_t ret{0};
     utils::DeviceTimer d_t0;
     copy(imgs_batch);
@@ -81,18 +80,6 @@ int32_t YOLOV8::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &ba
                      << "infer time = " << t2 / cfg_.param.batch_size << "ms; "
                      << "post_process time = " << t3 / cfg_.param.batch_size << "ms; "
                      << std::endl;
-    // if (cfg_.param.is_show)
-    //     utils::show(getObjectss(), cfg_.param.class_names, delayTime, imgs_batch);
-    // if (cfg_.param.is_save)
-    //     utils::save(getObjectss(), cfg_.param.class_names, param.save_path, imgs_batch, param.batch_size, batch_nums);
-    // rtmp_pusher.Handle(yolo.getObjectss(), param.class_names, delayTime, imgs_batch);
-    if (handle_cb != nullptr) {
-        ret = handle_cb(getObjectss(), cfg_.param.class_names, imgs_batch);
-        if (ret < 0) {
-            return -1;
-        }
-    }
-    reset();
     return 0;
 }
 

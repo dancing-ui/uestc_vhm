@@ -91,17 +91,22 @@ struct CandidateObject {
 
 struct Box {
     float left, top, right, bottom, confidence;
+    float width, height;
     int label;
     std::vector<cv::Point2i> land_marks;
 
     Box() = default;
     Box(float left, float top, float right, float bottom, float confidence, int label) :
         left(left), top(top), right(right), bottom(bottom), confidence(confidence), label(label) {
+        width = std::max(right - left, 0.0f);
+        height = std::max(bottom - top, 0.0f);
     }
 
     Box(float left, float top, float right, float bottom, float confidence, int label, int numLandMarks) :
         left(left), top(top), right(right), bottom(bottom), confidence(confidence), label(label) {
         land_marks.reserve(numLandMarks);
+        width = std::max(right - left, 0.0f);
+        height = std::max(bottom - top, 0.0f);
     }
 };
 

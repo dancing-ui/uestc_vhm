@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "yolo_driver.h"
+#include "reid_driver.h"
 
 namespace ns_uestc_vhm {
 
@@ -18,6 +19,7 @@ public:
     ModelFactory &operator=(ModelFactory &&) = default;
 
     virtual std::shared_ptr<yolo::YOLO> CreateYoloObj(ModelCfgItem const &cfg);
+    virtual std::shared_ptr<reid::REID> CreateReidObj(ModelCfgItem const &cfg);
 };
 
 class YoloFactory : public ModelFactory {
@@ -31,6 +33,19 @@ public:
     YoloFactory &operator=(YoloFactory &&) = default;
 
     std::shared_ptr<yolo::YOLO> CreateYoloObj(ModelCfgItem const &cfg) override;
+};
+
+class ReidFactory : public ModelFactory {
+public:
+    ReidFactory() = default;
+    ~ReidFactory() = default;
+
+    ReidFactory(ReidFactory const &) = default;
+    ReidFactory &operator=(ReidFactory const &) = default;
+    ReidFactory(ReidFactory &&) = default;
+    ReidFactory &operator=(ReidFactory &&) = default;
+
+    std::shared_ptr<reid::REID> CreateReidObj(ModelCfgItem const &cfg) override;
 };
 
 } // ns_uestc_vhm

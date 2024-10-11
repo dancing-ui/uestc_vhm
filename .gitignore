@@ -34,3 +34,8 @@
 build
 coredump
 .cache
+ffmpeg-study-recording
+ffmpeg_encode*
+yolov5_fastreid_deepsort_tensorrt
+fast-reid
+DeepSORT

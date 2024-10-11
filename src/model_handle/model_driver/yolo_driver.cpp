@@ -48,16 +48,15 @@ yolo::YOLO::~YOLO() {
 
 int32_t yolo::YOLO::Init() {
     // load model
-    std::vector<unsigned char> trt_file = utils::loadModel(cfg_.model);
+    std::vector<unsigned char> trt_file = utils::loadModel(cfg_.param.model_path);
     if (trt_file.empty()) {
         return -1;
     }
-    std::unique_ptr<nvinfer1::IRuntime> runtime =
-        std::unique_ptr<nvinfer1::IRuntime>(nvinfer1::createInferRuntime(sample::gLogger.getTRTLogger()));
-    if (runtime == nullptr) {
+    this->m_runtime = std::unique_ptr<nvinfer1::IRuntime>(nvinfer1::createInferRuntime(sample::gLogger.getTRTLogger()));
+    if (this->m_runtime == nullptr) {
         return -2;
     }
-    this->m_engine = std::unique_ptr<nvinfer1::ICudaEngine>(runtime->deserializeCudaEngine(trt_file.data(), trt_file.size()));
+    this->m_engine = std::unique_ptr<nvinfer1::ICudaEngine>(this->m_runtime->deserializeCudaEngine(trt_file.data(), trt_file.size()));
 
     if (this->m_engine == nullptr) {
         return -3;
@@ -96,7 +95,7 @@ int32_t yolo::YOLO::Init() {
     return 0;
 }
 
-int32_t yolo::YOLO::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const &handle_cb) {
+int32_t yolo::YOLO::BatchInference(std::vector<cv::Mat> &imgs_batch) {
     int32_t ret{0};
     utils::DeviceTimer d_t0;
     copy(imgs_batch);
@@ -114,69 +113,8 @@ int32_t yolo::YOLO::RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const
                      << "infer time = " << t2 / cfg_.param.batch_size << "ms; "
                      << "post_process time = " << t3 / cfg_.param.batch_size << "ms; "
                      << std::endl;
-
-    // if (cfg_.param.is_show)
-    //     utils::show(getObjectss(), cfg_.param.class_names, delayTime, imgs_batch);
-    // if (cfg_.param.is_save)
-    //     utils::save(getObjectss(), cfg_.param.class_names, param.save_path, imgs_batch, param.batch_size, batch_nums);
-    // rtmp_pusher.Handle(yolo.getObjectss(), param.class_names, delayTime, imgs_batch);
-    if (handle_cb != nullptr) {
-        ret = handle_cb(getObjectss(), cfg_.param.class_names, imgs_batch);
-        if (ret < 0) {
-            return -1;
-        }
-    }
-    reset();
     return 0;
 }
-
-// bool yolo::YOLO::init(const std::vector<unsigned char> &trtFile) {
-//     if (trtFile.empty()) {
-//         return false;
-//     }
-//     std::unique_ptr<nvinfer1::IRuntime> runtime =
-//         std::unique_ptr<nvinfer1::IRuntime>(nvinfer1::createInferRuntime(sample::gLogger.getTRTLogger()));
-//     if (runtime == nullptr) {
-//         return false;
-//     }
-//     this->m_engine = std::unique_ptr<nvinfer1::ICudaEngine>(runtime->deserializeCudaEngine(trtFile.data(), trtFile.size()));
-
-//     if (this->m_engine == nullptr) {
-//         return false;
-//     }
-//     this->m_context = std::unique_ptr<nvinfer1::IExecutionContext>(this->m_engine->createExecutionContext());
-//     if (this->m_context == nullptr) {
-//         return false;
-//     }
-//     if (cfg_.param.dynamic_batch) // for some models only support static mutil-batch. eg: yolox
-//     {
-//         this->m_context->setBindingDimensions(0, nvinfer1::Dims4(cfg_.param.batch_size, 3, cfg_.param.dst_h, cfg_.param.dst_w));
-//     }
-//     m_output_dims = this->m_context->getBindingDimensions(1);
-//     m_total_objects = m_output_dims.d[1];
-//     assert(cfg_.param.batch_size <= m_output_dims.d[0]);
-//     m_output_area = 1;
-//     for (int i = 1; i < m_output_dims.nbDims; i++) {
-//         if (m_output_dims.d[i] != 0) {
-//             m_output_area *= m_output_dims.d[i];
-//         }
-//     }
-//     checkRuntime(cudaMalloc(&m_output_src_device, cfg_.param.batch_size * m_output_area * sizeof(float)));
-//     float a = float(cfg_.param.dst_h) / cfg_.param.src_h;
-//     float b = float(cfg_.param.dst_w) / cfg_.param.src_w;
-//     float scale = a < b ? a : b;
-//     cv::Mat src2dst = (cv::Mat_<float>(2, 3) << scale, 0.f, (-scale * cfg_.param.src_w + cfg_.param.dst_w + scale - 1) * 0.5,
-//                        0.f, scale, (-scale * cfg_.param.src_h + cfg_.param.dst_h + scale - 1) * 0.5);
-//     cv::Mat dst2src = cv::Mat::zeros(2, 3, CV_32FC1);
-//     cv::invertAffineTransform(src2dst, dst2src);
-//     m_dst2src.v0 = dst2src.ptr<float>(0)[0];
-//     m_dst2src.v1 = dst2src.ptr<float>(0)[1];
-//     m_dst2src.v2 = dst2src.ptr<float>(0)[2];
-//     m_dst2src.v3 = dst2src.ptr<float>(1)[0];
-//     m_dst2src.v4 = dst2src.ptr<float>(1)[1];
-//     m_dst2src.v5 = dst2src.ptr<float>(1)[2];
-//     return true;
-// }
 
 void yolo::YOLO::check() {
     int idx;

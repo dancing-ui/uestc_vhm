@@ -1,5 +1,5 @@
-#ifndef _UESTC_VHM_YOLO_H_
-#define _UESTC_VHM_YOLO_H_
+#ifndef _UESTC_VHM_YOLO_DRIVER_H_
+#define _UESTC_VHM_YOLO_DRIVER_H_
 #include "utils.h"
 #include "kernel_function.h"
 #include "model_handle_common.h"
@@ -19,7 +19,7 @@ public:
 
 public:
     virtual int32_t Init();
-    virtual int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, int32_t const &batch_nums, ModelHandleCb const &handle_cb);
+    virtual int32_t BatchInference(std::vector<cv::Mat> &imgs_batch);
     virtual void check();
     virtual void copy(const std::vector<cv::Mat> &imgsBatch);
     virtual void preprocess(const std::vector<cv::Mat> &imgsBatch);
@@ -32,6 +32,7 @@ public:
 
 protected:
     std::shared_ptr<nvinfer1::ICudaEngine> m_engine;
+    std::unique_ptr<nvinfer1::IRuntime> m_runtime;
     std::unique_ptr<nvinfer1::IExecutionContext> m_context;
 
 protected:
@@ -60,4 +61,4 @@ protected:
 
 } // ns_uestc_vhm
 
-#endif // _UESTC_VHM_YOLO_H_
+#endif // _UESTC_VHM_YOLO_DRIVER_H_

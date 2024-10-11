@@ -15,7 +15,8 @@ list(APPEND CUDA_INCLUDE_DIRS ${CUDA_INCLUDE_DIRS})
 # message(FATAL_ERROR "CUDA_npp_LIBRARY: ${CUDA_npp_LIBRARY}")
 
 # gather TensorRT lib
-set(TensorRT_ROOT /home/xy/TensorRT-8.5.3.1)
+set(TensorRT_ROOT /usr/local/TensorRT-8.6.1.6)
+# set(TensorRT_ROOT /home/xy/TensorRT-8.5.3.1)
 
 find_library(TRT_NVINFER NAMES nvinfer HINTS ${TensorRT_ROOT} PATH_SUFFIXES lib lib64 lib/x64)
 find_library(TRT_NVINFER_PLUGIN NAMES nvinfer_plugin HINTS ${TensorRT_ROOT} PATH_SUFFIXES lib lib64 lib/x64)

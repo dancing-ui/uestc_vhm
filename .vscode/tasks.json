@@ -6,15 +6,14 @@
             "type": "shell",
             "command": "cmake",
             "args": [
-                "-S .",
-                "-B build",
                 "-DCMAKE_C_COMPILER=clang", 
                 "-DCMAKE_CXX_COMPILER=clang++",
                 "-DCMAKE_BUILD_TYPE=Debug",
                 "-DBUILD_PLATFORM=x86_64",
+                ".."
             ],
             "options": {
-                "cwd": ""
+                "cwd": "${workspaceFolder}/build"
             },
         },
         {
@@ -25,7 +24,7 @@
                 "-j20"
             ],
             "options": {
-                "cwd": "${workspaceFolder}/build/"
+                "cwd": "${workspaceFolder}/build"
             },
             "dependsOn": [
                 "CMake"

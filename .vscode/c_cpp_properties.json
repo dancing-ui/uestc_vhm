@@ -4,9 +4,9 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/usr/local/cuda-11.8",
-                "/home/xy/TensorRT-8.5.3.1",
-                "/usr/include/opencv4"
+                "/usr/local/cuda",
+                "/usr/local/TensorRT-8.6.1.6",
+                "/usr/local/opencv/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/clang",

@@ -5,9 +5,9 @@
             "type": "lldb",
             "request": "launch",
             "name": "LldbDebug",
-            "program": "${workspaceFolder}/build/${relativeFileDirname}/${fileBasenameNoExtension}",
+            "program": "${workspaceFolder}/build/src/uestc_vhm",
             "args": [
-                "--config=/home/xy/work/tensorrt-alpha/uestc_vhm/src/etc/uestc_vhm_cfg.json"
+                "--config=/workspace/src/etc/uestc_vhm_cfg.json"
             ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build",
@@ -16,9 +16,9 @@
             "name": "CppDebug",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/${relativeFileDirname}/${fileBasenameNoExtension}",
+            "program": "${workspaceFolder}/build/src/uestc_vhm",
             "args": [
-                "--config=/home/xy/work/tensorrt-alpha/uestc_vhm/src/etc/uestc_vhm_cfg.json"
+                "--config=/workspace/src/etc/uestc_vhm_cfg.json"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
