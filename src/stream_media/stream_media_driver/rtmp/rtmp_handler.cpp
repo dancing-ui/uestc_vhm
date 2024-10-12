@@ -125,11 +125,9 @@ int32_t RtmpHandler::HandledDataOutput(std::vector<std::vector<TrackerRes>> cons
             for (auto &box : objectss[bi]) {
                 if (model_cfg_.param.num_class == 91) {
                     color = utils::Colors::color91[box.classes];
-                }
-                else if (model_cfg_.param.num_class == 80) {
+                } else if (model_cfg_.param.num_class == 80) {
                     color = utils::Colors::color80[box.classes];
-                }
-                else if (model_cfg_.param.num_class == 20) {
+                } else if (model_cfg_.param.num_class == 20) {
                     color = utils::Colors::color80[box.classes];
                 }
                 float left = box.x - box.w / 2;

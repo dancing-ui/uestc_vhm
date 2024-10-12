@@ -226,7 +226,7 @@ void yolo::YOLO::postprocess(const std::vector<cv::Mat> &imgsBatch) {
             float *ptr = m_output_objects_host + bi * (cfg_.param.topK * m_output_objects_width + 1) + m_output_objects_width * i + 1;
             int keep_flag = ptr[6];
             if (keep_flag) {
-                if(!CheckIsPerson(ptr[5])) { // not person
+                if (!CheckIsPerson(ptr[5])) { // not person
                     continue;
                 }
                 float x_lt = m_dst2src.v0 * ptr[0] + m_dst2src.v1 * ptr[1] + m_dst2src.v2;
