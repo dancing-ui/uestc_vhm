@@ -238,12 +238,11 @@ int32_t ObjectTracker::Track(std::vector<utils::Box> const &detect_boxes, std::v
     std::vector<DetectRes> det_boxes;
     for (auto const &det_box : detect_boxes) {
         DetectRes box;
-        box.x = std::max(det_box.left, 0.0f);
-        box.y = std::max(det_box.top, 0.0f);
-        box.w = std::max(det_box.right - det_box.left, 0.0f);
-        box.h = std::max(det_box.bottom - det_box.top, 0.0f);
-        box.w = std::min(box.w, static_cast<float>(width - box.x));
-        box.h = std::min(box.h, static_cast<float>(height - box.y));
+        /*(x,y)是检测框的中心点*/
+        box.x = det_box.left + det_box.width / 2;
+        box.y = det_box.top + det_box.height / 2;
+        box.w = det_box.width;
+        box.h = det_box.height;
         box.classes = det_box.label;
         box.prob = det_box.confidence;
         det_boxes.push_back(box);

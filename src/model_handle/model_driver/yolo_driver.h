@@ -29,6 +29,7 @@ public:
 
 public:
     std::vector<std::vector<utils::Box>> getObjectss() const;
+    bool CheckIsPerson(int32_t label) const;
 
 protected:
     std::shared_ptr<nvinfer1::ICudaEngine> m_engine;

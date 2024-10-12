@@ -134,9 +134,6 @@ std::vector<unsigned char> loadModel(const std::string &file);
 
 std::string getSystemTimeStr();
 
-bool setInputStream(const InputStream &source, const std::string &imagePath, const std::string &videoPath, const int &cameraID,
-                    cv::VideoCapture &capture, int &totalBatches, int &delayTime, InitParameter &param);
-
 void setRenderWindow(InitParameter &param);
 
 std::string getTimeStamp();

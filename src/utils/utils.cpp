@@ -51,45 +51,6 @@ std::string utils::getSystemTimeStr() {
     return std::to_string(std::rand());
 }
 
-bool utils::setInputStream(const utils::InputStream &source, const std::string &imagePath, const std::string &videoPath, const int &cameraID,
-                           cv::VideoCapture &capture, int &totalBatches, int &delayTime, InitParameter &param) {
-    int total_frames = 0;
-    std::string img_format;
-    switch (source) {
-    case utils::InputStream::IMAGE:
-        img_format = imagePath.substr(imagePath.size() - 4, 4);
-        if (img_format == ".png" || img_format == ".PNG") {
-            sample::gLogWarning << "+-----------------------------------------------------------+" << std::endl;
-            sample::gLogWarning << "| If you use PNG format pictures, the file name must be eg: |" << std::endl;
-            sample::gLogWarning << "| demo0.png, demo1.png, demo2.png ......, but not demo.png. |" << std::endl;
-            sample::gLogWarning << "| The above rules are determined by OpenCV.					|" << std::endl;
-            sample::gLogWarning << "+-----------------------------------------------------------+" << std::endl;
-        }
-        capture.open(imagePath); // cv::CAP_IMAGES : !< OpenCV Image Sequence (e.g. img_%02d.jpg)
-        param.batch_size = 1;
-        total_frames = 1;
-        totalBatches = 1;
-        delayTime = 0;
-        break;
-    case utils::InputStream::VIDEO:
-        capture.open(videoPath);
-        total_frames = capture.get(cv::CAP_PROP_FRAME_COUNT);
-        totalBatches = (total_frames % param.batch_size == 0) ? (total_frames / param.batch_size) : (total_frames / param.batch_size + 1);
-        break;
-    case utils::InputStream::CAMERA:
-        // capture.open(cameraID);
-        total_frames = INT_MAX;
-        totalBatches = INT_MAX;
-        break;
-    default:
-        break;
-    }
-    // param.src_h = capture.get(cv::CAP_PROP_FRAME_HEIGHT);
-    // param.src_w = capture.get(cv::CAP_PROP_FRAME_WIDTH);
-
-    return capture.isOpened();
-}
-
 void utils::setRenderWindow(InitParameter &param) {
     if (!param.is_show)
         return;

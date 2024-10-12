@@ -20,7 +20,6 @@ public:
     int32_t BatchInference(std::vector<cv::Mat> const &imgs_batch, std::vector<std::vector<utils::Box>> const &detect_boxes) override;
 
 private:
-
     std::unique_ptr<fastrt::Baseline> baseline_;
 };
 

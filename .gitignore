@@ -38,3 +38,5 @@ ffmpeg_encode*
 yolov5_fastreid_deepsort_tensorrt
 fast-reid
 DeepSORT
+deepsort-tensorrt
+deepsort_bak

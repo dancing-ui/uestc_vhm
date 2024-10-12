@@ -29,8 +29,7 @@ RUN apt-get dist-upgrade -y && \
     software-properties-common \
     libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev \
     python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev \ 	
-    libdc1394-22-dev libgl1-mesa-glx && \
-    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+    libdc1394-22-dev libgl1-mesa-glx
 RUN mkdir opencv34 && cd opencv34 && \
     git clone -b 3.4 https://github.com/opencv/opencv && \
     git clone -b 3.4 https://github.com/opencv/opencv_contrib && \
@@ -63,3 +62,5 @@ RUN wget https://apt.llvm.org/llvm.sh \
     && apt-get install -y clang-format-18 \
     && update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 \
     && rm "$(pwd)/llvm.sh"
+# clean apt
+RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

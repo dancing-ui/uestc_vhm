@@ -226,6 +226,9 @@ void yolo::YOLO::postprocess(const std::vector<cv::Mat> &imgsBatch) {
             float *ptr = m_output_objects_host + bi * (cfg_.param.topK * m_output_objects_width + 1) + m_output_objects_width * i + 1;
             int keep_flag = ptr[6];
             if (keep_flag) {
+                if(!CheckIsPerson(ptr[5])) { // not person
+                    continue;
+                }
                 float x_lt = m_dst2src.v0 * ptr[0] + m_dst2src.v1 * ptr[1] + m_dst2src.v2;
                 float y_lt = m_dst2src.v3 * ptr[0] + m_dst2src.v4 * ptr[1] + m_dst2src.v5;
                 float x_rb = m_dst2src.v0 * ptr[2] + m_dst2src.v1 * ptr[3] + m_dst2src.v2;
@@ -245,6 +248,15 @@ void yolo::YOLO::reset() {
     for (size_t bi = 0; bi < cfg_.param.batch_size; bi++) {
         m_objectss[bi].clear();
     }
+}
+
+bool yolo::YOLO::CheckIsPerson(int32_t label) const {
+    if (cfg_.param.num_class == 91 || cfg_.param.num_class == 80) {
+        return label == 0;
+    } else if (cfg_.param.num_class == 20) {
+        return label == 14;
+    }
+    return false;
 }
 
 } // ns_uestc_vhm

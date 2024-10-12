@@ -17,20 +17,17 @@ int32_t RtmpHandler::Init(StreamMediaCfgItem const &stream_media_cfg, ModelCfgIt
     target_data_cb_ = [this](std::vector<std::vector<TrackerRes>> const &objectss, std::vector<cv::Mat> const &imgsBatch) -> int32_t {
         return HandledDataOutput(objectss, imgsBatch);
     };
+    // init stream
+    capture_.open(stream_media_cfg.in);
+    if (!capture_.isOpened()) {
+        PRINT_ERROR("open rtmp's stream failed, stream_id=%d\n", stream_media_cfg.id);
+        return -2;
+    }
+    // init parameter
     ret = InitParameter(stream_media_cfg, model_cfg);
     if (ret < 0) {
         PRINT_ERROR("init rtmp's stream parameter failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
         return -1;
-    }
-    capture_.open(stream_media_cfg_.in);
-    if (!capture_.isOpened()) {
-        PRINT_ERROR("open rtmp's stream failed, stream_id=%d\n", stream_media_cfg_.id);
-        return -2;
-    }
-    if (!utils::setInputStream(source_, image_path_, video_path_, camera_id_,
-                               capture_, total_batches_, delay_time_, model_cfg_.param)) {
-        PRINT_ERROR("set rtmp's stream failed, stream_id=%d\n", stream_media_cfg_.id);
-        return -3;
     }
     // init model
     model_handler_ = std::make_unique<ModelHandle>();
@@ -43,6 +40,7 @@ int32_t RtmpHandler::Init(StreamMediaCfgItem const &stream_media_cfg, ModelCfgIt
         PRINT_ERROR("init model_handler_ failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
         return -5;
     }
+    // open output stream
     ret = OpenOutputStream();
     if (ret < 0) {
         PRINT_ERROR("open rtmp's stream failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
@@ -98,6 +96,8 @@ int32_t RtmpHandler::InitParameter(StreamMediaCfgItem const &stream_media_cfg, M
     }
     output_size_.width = stream_media_cfg_.dst_width;
     output_size_.height = stream_media_cfg_.dst_height;
+    model_cfg_.param.src_h = capture_.get(cv::CAP_PROP_FRAME_HEIGHT);
+    model_cfg_.param.src_w = capture_.get(cv::CAP_PROP_FRAME_WIDTH);
     return 0;
 }
 
@@ -126,18 +126,20 @@ int32_t RtmpHandler::HandledDataOutput(std::vector<std::vector<TrackerRes>> cons
                 if (model_cfg_.param.num_class == 91) {
                     color = utils::Colors::color91[box.classes];
                 }
-                if (model_cfg_.param.num_class == 80) {
+                else if (model_cfg_.param.num_class == 80) {
                     color = utils::Colors::color80[box.classes];
                 }
-                if (model_cfg_.param.num_class == 20) {
+                else if (model_cfg_.param.num_class == 20) {
                     color = utils::Colors::color80[box.classes];
                 }
-                cv::rectangle(imgsBatch[bi], cv::Point(box.x, box.y), cv::Point(box.x + box.w, box.y + box.h), color, 2, cv::LINE_AA);
-                cv::String det_info = std::to_string(box.object_id) + " " + model_cfg_.param.class_names[box.classes] + " " + cv::format("%.4f", box.prob);
-                bbox_points[0][0] = cv::Point(box.x, box.y);
-                bbox_points[0][1] = cv::Point(box.x + det_info.size() * 11, box.y);
-                bbox_points[0][2] = cv::Point(box.x + det_info.size() * 11, box.y - 15);
-                bbox_points[0][3] = cv::Point(box.x, box.y - 15);
+                float left = box.x - box.w / 2;
+                float top = box.y - box.h / 2;
+                cv::rectangle(imgsBatch[bi], cv::Point(left, top), cv::Point(left + box.w, top + box.h), color, 2, cv::LINE_AA);
+                cv::String det_info = std::to_string(box.object_id);
+                bbox_points[0][0] = cv::Point(left, top);
+                bbox_points[0][1] = cv::Point(left + det_info.size() * 11, top);
+                bbox_points[0][2] = cv::Point(left + det_info.size() * 11, top - 15);
+                bbox_points[0][3] = cv::Point(left, top - 15);
                 std::vector<std::vector<cv::Point>> pts;
                 pts.push_back(std::vector<cv::Point>(bbox_points[0], bbox_points[0] + 4));
                 cv::fillPoly(imgsBatch[bi], pts, color);

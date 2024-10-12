@@ -43,19 +43,14 @@ int32_t FASTREID::BatchInference(std::vector<cv::Mat> const &imgs_batch, std::ve
     for (size_t i = 0; i < imgs_batch.size(); i++) {
         std::vector<cv::Mat> tmp_sub_imgs_batch;
         for (size_t j = 0; j < detect_boxes[i].size(); j++) {
-            float left = std::max(detect_boxes[i][j].left, 0.0f);
-            float top = std::max(detect_boxes[i][j].top, 0.0f);
-            float width = std::max(detect_boxes[i][j].right - detect_boxes[i][j].left, 0.0f);
-            float height = std::max(detect_boxes[i][j].bottom - detect_boxes[i][j].top, 0.0f);
-
-            cv::Rect2f crop_rect{left, top, width, height};
             int32_t img_width = imgs_batch[i].cols;
             int32_t img_height = imgs_batch[i].rows;
-            crop_rect.x = std::max(crop_rect.x, 0.0f);
-            crop_rect.y = std::max(crop_rect.y, 0.0f);
-            crop_rect.width = std::min(crop_rect.width, static_cast<float>(img_width - crop_rect.x));
-            crop_rect.height = std::min(crop_rect.height, static_cast<float>(img_height - crop_rect.y));
-            tmp_sub_imgs_batch.emplace_back(imgs_batch[i](crop_rect));
+            float left = std::max(detect_boxes[i][j].left, 0.0f);
+            float top = std::max(detect_boxes[i][j].top, 0.0f);
+            float width = std::min(detect_boxes[i][j].right - detect_boxes[i][j].left, static_cast<float>(img_width - left));
+            float height = std::min(detect_boxes[i][j].bottom - detect_boxes[i][j].top, static_cast<float>(img_height - top));
+            cv::Rect2f crop_rect{left, top, width, height};
+            tmp_sub_imgs_batch.emplace_back(imgs_batch[i](crop_rect).clone());
         }
         sub_imgs_batch.emplace_back(tmp_sub_imgs_batch);
     }
@@ -72,7 +67,7 @@ int32_t FASTREID::BatchInference(std::vector<cv::Mat> const &imgs_batch, std::ve
                 if ((batch_start + img_idx) >= sub_imgs_batch[i].size()) continue;
                 cv::Mat resizeImg(cfg_.reid_param.input_height, cfg_.reid_param.input_width, CV_8UC3);
                 cv::resize(sub_imgs_batch[i][batch_start + img_idx], resizeImg, resizeImg.size(), 0, 0, cv::INTER_CUBIC); /* cv::INTER_LINEAR */
-                input.emplace_back(resizeImg);
+                input.emplace_back(resizeImg.clone());
             }
 
             if (!baseline_->inference(input)) {
@@ -84,9 +79,9 @@ int32_t FASTREID::BatchInference(std::vector<cv::Mat> const &imgs_batch, std::ve
             TRTASSERT(feat_embedding);
             for (int32_t img_idx = 0; img_idx < static_cast<int32_t>(input.size()); ++img_idx) {
                 int32_t output_size = baseline_->getOutputSize();
-                cv::Mat feat_mat(1, output_size, CV_32F, &feat_embedding[img_idx * output_size]);
+                cv::Mat feat_mat(1, output_size, CV_32FC1, &feat_embedding[img_idx * output_size]);
                 cv::normalize(feat_mat, feat_mat); // 正则化，非常重要，后面求相似矩阵的权值时会用到，否则权值会变成负数
-                feats.emplace_back(feat_mat);      // 使用 clone 以确保数据的独立性
+                feats.emplace_back(feat_mat.clone());
             }
         }
         feats_lists_.emplace_back(feats);

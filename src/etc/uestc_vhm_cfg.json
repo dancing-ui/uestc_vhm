@@ -6,15 +6,13 @@
             "type": "rtmp",
             "name": "unknown",
             "in": "rtmp://172.17.0.3/camera/camera_stream",
-            "out": "rtmp://172.17.0.3/yolov8n/yolov8n_stream",
+            "out": "rtmp://172.17.0.3/object_track/object_track_stream",
             "dst_width": 1920,
             "dst_height": 1080
         }
     ],
     "model": {
         "yolo": {
-            "src_width": 1920,
-            "src_height": 1080,
             "dst_width": 640,
             "dst_height": 640,
             "num_class": 80,
@@ -32,7 +30,7 @@
             "input_height": 384,
             "output_size": 2048,
             "device_id": 0,
-            "batch_size": 4
+            "batch_size": 8
         }
     },
     "object_track": {
