@@ -14,7 +14,7 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list \
     && sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
 # install additional packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends apt-utils build-essential cmake git zsh curl ca-certificates net-tools wget vim    
+    && apt-get -y install --no-install-recommends apt-utils build-essential cmake git zsh curl ca-certificates net-tools wget vim openssh-client    
 # configure zsh
 RUN chsh -s /bin/zsh \ 
     && sh -c "$(curl -fsSL https://install.ohmyz.sh/)" \
