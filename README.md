@@ -27,7 +27,7 @@ docker run --rm -it --gpus=all nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu -
 ```
 ![alt text](doc/image/gpu_test.png)
 
-2. 本项目所使用模型均通过官方仓库本地编译得来，且由于本项目使用了git-lfs来管理模型文件，因此初期阶段无需下载模型文件，其模型文件存放在model_file目录下
+2. 本项目所使用模型均通过官方仓库本地编译得来，且由于本项目使用了git-lfs来管理模型文件和视频文件，因此初期阶段无需下载模型文件和测试视频，模型文件存放在model_file目录下，视频文件在test_video目录下
 3. 可以通过修改src/etc/uestc_vhm_cfg.json配置文件的路径来自定义配置（流媒体配置、模型配置）
 
 # 感谢
