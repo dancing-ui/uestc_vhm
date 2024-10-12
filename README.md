@@ -64,4 +64,4 @@ chmod +x /workspace/local_build.sh
 - 联系方式：
   - email: fengx02@163.com
   - QQ: 2779856074
-- 如果有该项目有帮助到您，麻烦点一下右上角的小星星（求star），谢谢哦 :)
+- 如果该项目有帮助到您，麻烦点一下右上角的小星星（求star），谢谢哦 :)
