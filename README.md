@@ -58,3 +58,10 @@ chmod +x /workspace/local_build.sh
   - [deepsort](https://github.com/linghu8812/yolov5_fastreid_deepsort_tensorrt)
   - [yolo](https://github.com/FeiYull/TensorRT-Alpha)
 - [错误记录文档链接（附详细复现流程）](https://arvas2ztsq.feishu.cn/drive/folder/ErYgf1ynRl0ZsNdICxzc45eVnWe?from=from_copylink)
+
+# 后记
+- 有任何问题都可以联系我，有任何建议都可以提出来，欢迎大家提issue和pr
+- 联系方式：
+  - email: fengx02@163.com
+  - QQ: 2779856074
+- 如果有该项目有帮助到您，麻烦点一下右上角的小星星（求star），谢谢哦 :)
