@@ -3,6 +3,7 @@
 
   [![Cuda](https://img.shields.io/badge/CUDA-11.3-%2376B900?logo=nvidia)](https://developer.nvidia.com/cuda-toolkit-archive)
   [![](https://img.shields.io/badge/TensorRT-8.6.1.6-%2376B900.svg?style=flat&logo=tensorrt)](https://developer.nvidia.com/nvidia-tensorrt-8x-download)
+  [![](https://img.shields.io/badge/ubuntu-20.04-orange.svg?style=flat&logo=ubuntu)](https://releases.ubuntu.com/20.04/)
   [![GitHub stars](https://img.shields.io/github/stars/dancing-ui/uestc_vhm.svg?style=flat-square&logo=github&label=Stars&logoColor=white)](https://github.com/dancing-ui/uestc_vhm)
 
 
@@ -24,6 +25,7 @@
 - CPU: 13th Gen Intel(R) Core(TM) i5-13500HX   2.50 GHz
 - GPU: NVIDIA GeForce RTX 4060 Laptop GPU
 - RAM: 32GB
+- OS: Ubuntu 20.04
 - Architecture: x86_64
 - Development editor: VSCode
 - Compiler: Clang 18.1.8
