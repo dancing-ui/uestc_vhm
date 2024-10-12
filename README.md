@@ -20,7 +20,7 @@
 # 支持特性
 - 流媒体技术：目前，本项目可以使用RTMP对摄像头或者视频进行推拉流，后续考虑添加RTSP。
 - 目标检测：支持yolov8n。
-- 目标跟踪：支持deepsort算法。
+- 目标跟踪：支持deepsort算法，后续考虑添加bytetrack算法。
 # 开发环境
 - CPU: 13th Gen Intel(R) Core(TM) i5-13500HX   2.50 GHz
 - GPU: NVIDIA GeForce RTX 4060 Laptop GPU
