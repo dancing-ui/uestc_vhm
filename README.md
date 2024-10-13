@@ -13,7 +13,10 @@
 - 本项目的开发目标是为了快速部署目标检测、特征提取等算法模型，并将其通过流媒体的方式推流到前端页面进行显示。
 - 本项目在开发过程中深入贯彻“高内聚、低耦合”的设计原则，力争很轻松地对目标检测、目标跟踪等算法和技术进行扩展。
 # 效果展示
-![alt text](doc/image/app_test.gif)
+<div align=center>
+	<img src="doc/image/app_test.gif"/>
+</div>
+
 # 技术路线 
 - 本项目主要使用了yolo系列模型完成目标检测，然后使用fast-reid提取目标框的特征向量，最后使用deepsort算法完成目标跟踪。
 # 支持特性
@@ -34,7 +37,10 @@
 1. 安装WSL2.0，并在WSL2.0中安装Ubuntu 22.04.3 LTS，[安装教程](https://learn.microsoft.com/zh-cn/windows/wsl/install-manual)
 2. 安装docker-desktop
 3. 在powershell中使用如下命令检验WSL安装情况，下图中的Ubuntu-22.04-UESTC是我自己取的名字
-![alt text](doc/image/wsl.png)
+<div align=center>
+	<img src="doc/image/wsl.png"/>
+</div>
+
 4. 检验docker环境
    - 本项目使用Dockerfile管理开发环境，环境中已自带所有可用的TensorRT、Cuda、Cudann、Opencv、Ffmpeg等依赖。按理来说，无需下载多余的包，仅需下载安装docker-desktop保证docker环境，并使用项目中的Dockerfile构建镜像即可。
    - 由于WSL使用的是docker-desktop，所以无需在Ubuntu 22.04.3 LTS安装docker，只需要保证docker-desktop在后台运行即可
@@ -43,9 +49,14 @@
 docker run --rm -it --gpus=all nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu -benchmark
 ```
     正常输出应该有你的显卡型号，如下图输出 RTX 4060 Laptop GPU
-![alt text](doc/image/gpu_test.png)
+<div align=center>
+	<img src="doc/image/gpu_test.png"/>
+</div>
 
 ## 项目下载
+- git相关文档
+  - 安装与配置：https://zhuanlan.zhihu.com/p/512099806
+  - 常用命令：https://zhuanlan.zhihu.com/p/678347984
 ```bash
 # https
 git clone https://github.com/dancing-ui/uestc_vhm.git
@@ -80,7 +91,10 @@ cd /workspace/build/src
 ./uestc_vhm --config=/workspace/src/etc/uestc_vhm_cfg.json
 ```
 ## 运行时资源占用
-![alt text](doc/image/runtime.png)
+<div align=center>
+	<img src="doc/image/runtime.png"/>
+</div>
+
 # 感谢
 - [理论指导](https://blog.csdn.net/LuohenYJ/article/details/122491044)
 - 本项目参考了以下开源项目：
@@ -100,4 +114,4 @@ ps -e|grep uestc_vhm|awk '{print $1}'|xargs kill -2
 - 联系方式：
   - Email: fengx02@163.com
   - QQ: 2779856074
-- 如果该项目有帮助到您，麻烦点一下右上角的小星星，谢谢您 :)
+- 如果该项目有帮助到您，请点一下右上角的小星星，感谢您的支持 :)
