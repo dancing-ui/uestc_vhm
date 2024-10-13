@@ -86,8 +86,7 @@ make -j20
 cd ../../bin
 ./sample_onnx_mnist
 ```
-    正常截图如下图，有PASSED TensorRT.sample_onnx_mnist输出
-![alt text](image.png)
+    - 正常截图如下图，有PASSED TensorRT.sample_onnx_mnist输出
 <div align=center>
 	<img src="doc/image/tensorrt_test.png"/>
 </div>
