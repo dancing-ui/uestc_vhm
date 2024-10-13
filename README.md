@@ -103,24 +103,12 @@ cd /workspace
 chmod +x ./local_build.sh
 ./local_build.sh
 ```
-## 项目运行
-- 使用以下命令启动项目
+## 程序运行
+- 使用以下命令启动程序
 ```bash
 cd /workspace/build/src
 ./uestc_vhm --config=/workspace/src/etc/uestc_vhm_cfg.json
 ```
-## 运行时资源占用
-<div align=center>
-	<img src="doc/image/runtime.png"/>
-</div>
-
-# 感谢
-- [理论指导](https://blog.csdn.net/LuohenYJ/article/details/122491044)
-- 本项目参考了以下开源项目：
-  - [fast-reid](https://github.com/JDAI-CV/fast-reid)
-  - [deepsort](https://github.com/linghu8812/yolov5_fastreid_deepsort_tensorrt)
-  - [yolo](https://github.com/FeiYull/TensorRT-Alpha)
-- [错误记录文档链接（附详细开发流程）](https://arvas2ztsq.feishu.cn/drive/folder/ErYgf1ynRl0ZsNdICxzc45eVnWe?from=from_copylink)
 ## 程序退出
 ```bash
 1. 使用ctrl+c退出uestc_vhm程序
@@ -128,8 +116,20 @@ cd /workspace/build/src
 
 ps -e|grep uestc_vhm|awk '{print $1}'|xargs kill -2
 ```
+## 运行时资源占用
+<div align=center>
+	<img src="doc/image/runtime.png"/>
+</div>
+
+# 参考资料
+- [理论指导](https://blog.csdn.net/LuohenYJ/article/details/122491044)
+- 本项目参考了以下开源项目：
+  - [fast-reid](https://github.com/JDAI-CV/fast-reid)
+  - [deepsort](https://github.com/linghu8812/yolov5_fastreid_deepsort_tensorrt)
+  - [yolo](https://github.com/FeiYull/TensorRT-Alpha)
+- [错误记录文档链接（附详细开发流程）](https://arvas2ztsq.feishu.cn/drive/folder/ErYgf1ynRl0ZsNdICxzc45eVnWe?from=from_copylink)
 # 后记
-- 有任何问题都可以联系我，欢迎大家提issues和pr
+- 有任何问题都可以联系我，欢迎提issues和pr
 - 联系方式：
   - Email: fengx02@163.com
   - QQ: 2779856074
