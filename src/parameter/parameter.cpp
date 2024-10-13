@@ -22,12 +22,12 @@ static void OptionUsage() {
     PRINT("-----------------------------------------------------------------------------------\n");
     // PRINT("\t[MUST] --model [recognition model path]: such as \"./yolov8n.trt\"\n");
     // PRINT("\t[OPT]  --batch [number of images processed in one round, default is 1]: such as \"1, 2 or 4...\"\n");
-    PRINT("\t[MUST] --config [configuration file path]: such as \"./uestc_vhm_cfg.json\"\n");
+    PRINT("\t[MUST] --config=[configuration file path]: such as \"./uestc_vhm_cfg.json\"\n");
     // PRINT("\t[OPT]  --save [recognition result saving directory]: such as \"./uestc_vhm_save_dir\"\n");
     // PRINT("\t[OPT]  --show: show the recognition result\n");
     PRINT("example: \n");
     // PRINT("\t./uestc_vhm --model=./yolov8n.trt --batch=4 --config=./uestc_vhm_cfg.json --save=./uestc_vhm_save_dir --show\n");
-    PRINT("\t./uestc_vhm --config=./uestc_vhm_cfg.json\n");
+    PRINT("\t./uestc_vhm --config=/workspace/src/etc/uestc_vhm_cfg.json\n");
 
     PRINT("-----------------------------------------------------------------------------------\n");
 }

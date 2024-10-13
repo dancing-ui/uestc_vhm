@@ -54,7 +54,7 @@ RUN wget https://developer.nvidia.com/downloads/compute/machine-learning/tensorr
 RUN apt-get -y install ffmpeg
 # update clang
 RUN wget https://apt.llvm.org/llvm.sh \
-    && chmod u+x "$(pwd)/llvm.sh"
+    && chmod u+x "$(pwd)/llvm.sh" \
     && "$(pwd)/llvm.sh" 18 \
     && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100 \
     && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100 \
