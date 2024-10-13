@@ -32,8 +32,8 @@ public:
     bool CheckIsPerson(int32_t label) const;
 
 protected:
+    std::unique_ptr<nvinfer1::IRuntime> m_runtime; // m_runtime必须在m_engine之前，因为m_runtime需要在m_engine之前析构
     std::shared_ptr<nvinfer1::ICudaEngine> m_engine;
-    std::unique_ptr<nvinfer1::IRuntime> m_runtime;
     std::unique_ptr<nvinfer1::IExecutionContext> m_context;
 
 protected:
