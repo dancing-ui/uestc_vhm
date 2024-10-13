@@ -32,6 +32,7 @@
 - Architecture: x86_64
 - Development editor: VSCode
 - Compiler: Clang 18.1.8
+- TensorRT: 8.6.1.6
 # Quick Start
 ## 前置安装
 1. 安装nvidia驱动，[安装教程](https://io.web3miner.io/worker-guides/install_with_windows/windows-an-zhuang-nvidia-qu-dong-cheng-xu)
@@ -92,7 +93,7 @@ cd ../../bin
 </div>
 
 ## 模型配置
-- 本项目所使用模型均通过官方仓库本地编译得来，且由于本项目使用了git-lfs来管理模型文件和视频文件，因此初期阶段无需下载模型文件和测试视频，模型文件存放在model_file目录下，视频文件在test_video目录下。
+- 本项目所使用模型均通过官方仓库本地编译得来，且由于本项目使用了git-lfs来管理模型文件和视频文件，因此初期阶段（若更换TensorRT版本，需要重新导出模型）无需下载模型文件和测试视频，模型文件存放在model_file目录下，视频文件在test_video目录下。
 - 可以通过修改src/etc/uestc_vhm_cfg.json配置文件的路径来自定义配置（流媒体配置、模型配置）。
 ## 项目编译
 - 提供两种编译方式，一种是用VSCode的.vscode配置文件，一种是使用脚本文件。
