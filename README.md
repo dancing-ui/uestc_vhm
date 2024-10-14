@@ -11,7 +11,7 @@
 
 # 项目介绍
 - 本项目的开发目标是为了快速部署目标检测、特征提取等算法模型，并将其通过流媒体的方式推流到前端页面进行显示。
-- 本项目在开发过程中深入贯彻“高内聚、低耦合”的设计原则，力争很轻松地对目标检测、目标跟踪等算法和技术进行扩展。
+- 本项目在开发过程中深入贯彻“高内聚、低耦合”的编码原则，力争很轻松地对目标检测、目标跟踪、流媒体等算法和技术进行扩展。
 # 效果展示
 <div align=center>
 	<img src="doc/image/app_test.gif"/>
@@ -20,9 +20,10 @@
 # 技术路线 
 - 本项目主要使用了yolo系列模型完成目标检测，然后使用fast-reid提取目标框的特征向量，最后使用deepsort算法完成目标跟踪。
 # 支持特性
-- 流媒体技术：目前，本项目可以使用RTMP对摄像头或者视频进行推拉流，后续考虑添加RTSP以支持实时监控功能。
-- 目标检测：支持yolov8n。
-- 目标跟踪：支持deepsort算法，后续考虑添加bytetrack算法。
+- 流媒体：目前，本项目可以使用RTMP对摄像头或者视频进行推拉流，后续考虑添加RTSP以支持实时监控功能。
+- 特征向量提取：支持Fast-Reid提取目标框的特征向量。
+- 目标检测：支持Yolov8n模型实现目标检测。
+- 目标跟踪：支持DeepSORT算法实现目标跟踪，后续考虑添加ByteTrack算法。
 # 开发环境
 - CPU: 13th Gen Intel(R) Core(TM) i5-13500HX   2.50 GHz
 - GPU: NVIDIA GeForce RTX 4060 Laptop GPU
@@ -33,6 +34,7 @@
 - Development editor: VSCode
 - Compiler: Clang 18.1.8
 - TensorRT: 8.6.1.6
+- Ffmpeg: 4.2.7
 # Quick Start
 ## 前置安装
 1. 安装nvidia驱动，[安装教程](https://io.web3miner.io/worker-guides/install_with_windows/windows-an-zhuang-nvidia-qu-dong-cheng-xu)
@@ -93,7 +95,7 @@ cd ../../bin
 </div>
 
 ## 模型配置
-- 本项目所使用模型均通过官方仓库本地编译得来，且由于本项目使用了git-lfs来管理模型文件和视频文件，因此初期阶段（若更换TensorRT版本，需要重新导出模型）无需下载模型文件和测试视频，模型文件存放在model_file目录下，视频文件在test_video目录下。
+- 本项目所使用模型均通过官方仓库本地编译得来，且由于本项目使用了git-lfs来管理模型文件和视频文件，因此初期阶段（若更换TensorRT版本，需要重新生成模型，[模型生成教程](model_file/how_to_generate_model.md)）无需下载模型文件和测试视频，模型文件存放在model_file目录下，视频文件在test_video目录下。
 - 可以通过修改src/etc/uestc_vhm_cfg.json配置文件的路径来自定义配置（流媒体配置、模型配置）。
 ## 项目编译
 - 提供两种编译方式，一种是用VSCode的.vscode配置文件，一种是使用脚本文件。
@@ -116,7 +118,7 @@ cd /workspace/build/src
 
 ps -e|grep uestc_vhm|awk '{print $1}'|xargs kill -2
 ```
-## 运行时资源占用
+## 程序资源占用
 <div align=center>
 	<img src="doc/image/runtime.png"/>
 </div>
