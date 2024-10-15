@@ -15,10 +15,10 @@ public:
     Config(ParamOpt const &opt);
     ~Config();
 
-    Config(Config const &) = default;
-    Config &operator=(Config const &) = default;
-    Config(Config &&) = default;
-    Config &operator=(Config &&) = default;
+    Config(Config const &) = delete;
+    Config &operator=(Config const &) = delete;
+    Config(Config &&) = delete;
+    Config &operator=(Config &&) = delete;
 
     int32_t Init();
     int32_t Parse();

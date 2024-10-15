@@ -12,10 +12,10 @@ public:
     ModelManager() = default;
     ~ModelManager();
 
-    ModelManager(ModelManager const &) = default;
-    ModelManager &operator=(ModelManager const &) = default;
-    ModelManager(ModelManager &&) = default;
-    ModelManager &operator=(ModelManager &&) = default;
+    ModelManager(ModelManager const &) = delete;
+    ModelManager &operator=(ModelManager const &) = delete;
+    ModelManager(ModelManager &&) = delete;
+    ModelManager &operator=(ModelManager &&) = delete;
 
     int32_t Init(ModelCfgItem const &cfg);
     int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch, ModelHandleCb const &handle_cb);

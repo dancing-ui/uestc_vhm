@@ -12,10 +12,10 @@ public:
     StreamMediaFactory() = default;
     virtual ~StreamMediaFactory() = default;
 
-    StreamMediaFactory(StreamMediaFactory const &) = default;
-    StreamMediaFactory &operator=(StreamMediaFactory const &) = default;
-    StreamMediaFactory(StreamMediaFactory &&) = default;
-    StreamMediaFactory &operator=(StreamMediaFactory &&) = default;
+    StreamMediaFactory(StreamMediaFactory const &) = delete;
+    StreamMediaFactory &operator=(StreamMediaFactory const &) = delete;
+    StreamMediaFactory(StreamMediaFactory &&) = delete;
+    StreamMediaFactory &operator=(StreamMediaFactory &&) = delete;
 
     virtual std::shared_ptr<StreamMediaDriver> Create() = 0;
 };
@@ -25,10 +25,10 @@ public:
     RtmpHandlerFactory() = default;
     ~RtmpHandlerFactory() = default;
 
-    RtmpHandlerFactory(RtmpHandlerFactory const &) = default;
-    RtmpHandlerFactory &operator=(RtmpHandlerFactory const &) = default;
-    RtmpHandlerFactory(RtmpHandlerFactory &&) = default;
-    RtmpHandlerFactory &operator=(RtmpHandlerFactory &&) = default;
+    RtmpHandlerFactory(RtmpHandlerFactory const &) = delete;
+    RtmpHandlerFactory &operator=(RtmpHandlerFactory const &) = delete;
+    RtmpHandlerFactory(RtmpHandlerFactory &&) = delete;
+    RtmpHandlerFactory &operator=(RtmpHandlerFactory &&) = delete;
 
     std::shared_ptr<StreamMediaDriver> Create() override;
 };

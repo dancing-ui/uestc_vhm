@@ -13,10 +13,10 @@ public:
     ModelFactory() = default;
     virtual ~ModelFactory() = default;
 
-    ModelFactory(ModelFactory const &) = default;
-    ModelFactory &operator=(ModelFactory const &) = default;
-    ModelFactory(ModelFactory &&) = default;
-    ModelFactory &operator=(ModelFactory &&) = default;
+    ModelFactory(ModelFactory const &) = delete;
+    ModelFactory &operator=(ModelFactory const &) = delete;
+    ModelFactory(ModelFactory &&) = delete;
+    ModelFactory &operator=(ModelFactory &&) = delete;
 
     virtual std::shared_ptr<yolo::YOLO> CreateYoloObj(ModelCfgItem const &cfg);
     virtual std::shared_ptr<reid::REID> CreateReidObj(ModelCfgItem const &cfg);
@@ -27,10 +27,10 @@ public:
     YoloFactory() = default;
     ~YoloFactory() = default;
 
-    YoloFactory(YoloFactory const &) = default;
-    YoloFactory &operator=(YoloFactory const &) = default;
-    YoloFactory(YoloFactory &&) = default;
-    YoloFactory &operator=(YoloFactory &&) = default;
+    YoloFactory(YoloFactory const &) = delete;
+    YoloFactory &operator=(YoloFactory const &) = delete;
+    YoloFactory(YoloFactory &&) = delete;
+    YoloFactory &operator=(YoloFactory &&) = delete;
 
     std::shared_ptr<yolo::YOLO> CreateYoloObj(ModelCfgItem const &cfg) override;
 };
@@ -40,10 +40,10 @@ public:
     ReidFactory() = default;
     ~ReidFactory() = default;
 
-    ReidFactory(ReidFactory const &) = default;
-    ReidFactory &operator=(ReidFactory const &) = default;
-    ReidFactory(ReidFactory &&) = default;
-    ReidFactory &operator=(ReidFactory &&) = default;
+    ReidFactory(ReidFactory const &) = delete;
+    ReidFactory &operator=(ReidFactory const &) = delete;
+    ReidFactory(ReidFactory &&) = delete;
+    ReidFactory &operator=(ReidFactory &&) = delete;
 
     std::shared_ptr<reid::REID> CreateReidObj(ModelCfgItem const &cfg) override;
 };

@@ -9,10 +9,10 @@ public:
     StreamMediaDriver() = default;
     virtual ~StreamMediaDriver() = default;
 
-    StreamMediaDriver(StreamMediaDriver const &) = default;
-    StreamMediaDriver &operator=(StreamMediaDriver const &) = default;
-    StreamMediaDriver(StreamMediaDriver &&) = default;
-    StreamMediaDriver &operator=(StreamMediaDriver &&) = default;
+    StreamMediaDriver(StreamMediaDriver const &) = delete;
+    StreamMediaDriver &operator=(StreamMediaDriver const &) = delete;
+    StreamMediaDriver(StreamMediaDriver &&) = delete;
+    StreamMediaDriver &operator=(StreamMediaDriver &&) = delete;
 
     virtual int32_t Init(StreamMediaCfgItem const &stream_media_cfg, ModelCfgItem const &model_cfg) = 0;
     virtual int32_t Start() = 0;
