@@ -10,9 +10,21 @@ namespace ns_uestc_vhm {
 
 class ObjectTrackStrategy {
 public:
-    virtual int32_t Init() = 0;
     virtual int32_t Track(std::vector<utils::Box> const &detect_boxes, std::vector<cv::Mat> const &feats, int32_t width, int32_t height) = 0;
     virtual std::vector<TrackerRes> GetTrackBoxes() = 0;
+};
+
+class ObjectTrackStrategyFactory {
+public:
+    ObjectTrackStrategyFactory() = default;
+    ~ObjectTrackStrategyFactory() = default;
+
+    ObjectTrackStrategyFactory(ObjectTrackStrategyFactory const &) = delete;
+    ObjectTrackStrategyFactory &operator=(ObjectTrackStrategyFactory const &) = delete;
+    ObjectTrackStrategyFactory(ObjectTrackStrategyFactory &&) = delete;
+    ObjectTrackStrategyFactory &operator=(ObjectTrackStrategyFactory &&) = delete;
+
+    static std::shared_ptr<ObjectTrackStrategy> CreateStrategy(std::string const &strategy_name, ModelCfgItem const &cfg);
 };
 
 class ObjectTrackCtx {

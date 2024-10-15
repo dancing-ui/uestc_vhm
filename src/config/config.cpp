@@ -215,6 +215,14 @@ int32_t Config::Parse() {
     }
     PRINT_INFO("begin to parse object track config\n");
     if (json_obj.contains("object_track")) {
+        auto item = json_obj["object_track"];
+        if (item.contains("enbaled_strategy_name")) {
+            model_cfg_item_.object_track_param.enbaled_strategy_name = item["enbaled_strategy_name"].get<std::string>();
+        } else {
+            PRINT_ERROR("'enbaled_strategy_name' key not found\n");
+            return -1;
+        }
+
         if (json_obj["object_track"].contains("deepsort")) {
             auto item = json_obj["object_track"]["deepsort"];
 

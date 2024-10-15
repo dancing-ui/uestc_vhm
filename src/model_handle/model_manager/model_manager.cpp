@@ -1,7 +1,5 @@
 #include "model_manager.h"
-#include "deepsort/tracker.h"
 #include "log.h"
-#include "tracker.h"
 #include <memory>
 
 namespace ns_uestc_vhm {
@@ -43,22 +41,12 @@ int32_t ModelManager::Init(ModelCfgItem const &cfg) {
         return -6;
     }
 
-    std::shared_ptr<ObjectTracker> deepsort_strategy = std::make_shared<ObjectTracker>(cfg);
-    if (deepsort_strategy.get() == nullptr) {
-        PRINT_ERROR("create deepsort_strategy failed\n");
-        return -7;
-    }
-    ret = deepsort_strategy->Init();
-    if (ret < 0) {
-        PRINT_ERROR("init deepsort_strategy failed, ret=%d\n", ret);
-        return -8;
-    }
     object_track_ctx_ = std::make_shared<ObjectTrackCtx>();
     if (object_track_ctx_.get() == nullptr) {
         PRINT_ERROR("create object_track_ctx_ failed\n");
         return -9;
     }
-    object_track_ctx_->SetStrategy(deepsort_strategy);
+    object_track_ctx_->SetStrategy(ObjectTrackStrategyFactory::CreateStrategy(cfg.object_track_param.enbaled_strategy_name, cfg));
 
     return 0;
 }

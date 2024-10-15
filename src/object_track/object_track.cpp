@@ -1,10 +1,19 @@
 #include "object_track.h"
+#include "deepsort.h"
 #include "log.h"
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 
 namespace ns_uestc_vhm {
+
+std::shared_ptr<ObjectTrackStrategy> ObjectTrackStrategyFactory::CreateStrategy(std::string const &strategy_name, ModelCfgItem const &cfg) {
+    if (strategy_name == "deepsort") {
+        return std::make_shared<DeepSort>(cfg);
+    }
+    PRINT_ERROR("ObjectTrackStrategyFactory::CreateStrategy: strategy_name=%s not support\n", strategy_name.c_str());
+    return nullptr;
+}
 
 void ObjectTrackCtx::SetStrategy(std::shared_ptr<ObjectTrackStrategy> strategy) {
     this->strategy_ = strategy;

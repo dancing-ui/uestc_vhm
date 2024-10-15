@@ -61,6 +61,7 @@ struct DeepSortParameter {
 };
 
 struct ObjectTrackParameter {
+    std::string enbaled_strategy_name;
     DeepSortParameter deepsort_param;
 };
 

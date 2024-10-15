@@ -1,21 +1,19 @@
-#include "tracker.h"
+#include "deepsort.h"
 #include "Hungarian.h"
 
 namespace ns_uestc_vhm {
 
-ObjectTracker::ObjectTracker(ModelCfgItem const &cfg) :
+DeepSort::DeepSort(ModelCfgItem const &cfg) :
     cfg_(cfg) {
-    // labels_file = config["labels_file"].as<std::string>();
-    // class_labels = readClassLabel(labels_file);
-    // id_colors.resize(100);
-    // srand((int)time(nullptr));
-    // for (cv::Scalar &id_color : id_colors)
-    //     id_color = cv::Scalar(rand() % 255, rand() % 255, rand() % 255);
+    max_age = cfg_.object_track_param.deepsort_param.max_age;
+    iou_threshold = cfg_.object_track_param.deepsort_param.iou_threshold;
+    sim_threshold = cfg_.object_track_param.deepsort_param.sim_threshold;
+    agnostic = cfg_.object_track_param.deepsort_param.agnostic;
 }
 
-ObjectTracker::~ObjectTracker() = default;
+DeepSort::~DeepSort() = default;
 
-float ObjectTracker::IOUCalculate(const TrackerRes &det_a, const TrackerRes &det_b) {
+float DeepSort::IOUCalculate(const TrackerRes &det_a, const TrackerRes &det_b) {
     cv::Point2f center_a(det_a.x, det_a.y);
     cv::Point2f center_b(det_b.x, det_b.y);
     cv::Point2f left_up(std::min(det_a.x - det_a.w / 2, det_b.x - det_b.w / 2),
@@ -38,9 +36,9 @@ float ObjectTracker::IOUCalculate(const TrackerRes &det_a, const TrackerRes &det
         return inter_area / union_area - distance_d / distance_c;
 }
 
-void ObjectTracker::Alignment(std::vector<std::vector<double>> mat, std::set<int> &unmatchedDetections,
-                              std::set<int> &unmatchedTrajectories, std::vector<cv::Point> &matchedPairs,
-                              int det_num, int trk_num, bool b_iou) {
+void DeepSort::Alignment(std::vector<std::vector<double>> mat, std::set<int> &unmatchedDetections,
+                         std::set<int> &unmatchedTrajectories, std::vector<cv::Point> &matchedPairs,
+                         int det_num, int trk_num, bool b_iou) {
     /*行是目标图片，列是预测图片（跟踪图片）*/
     std::vector<int> assignment;
     HungarianAlgorithm HungAlgo;
@@ -116,8 +114,8 @@ void ObjectTracker::Alignment(std::vector<std::vector<double>> mat, std::set<int
     }
 }
 
-void ObjectTracker::FeatureMatching(const std::vector<TrackerRes> &predict_boxes, std::set<int> &unmatchedDetections,
-                                    std::set<int> &unmatchedTrajectories, std::vector<cv::Point> &matchedPairs) {
+void DeepSort::FeatureMatching(const std::vector<TrackerRes> &predict_boxes, std::set<int> &unmatchedDetections,
+                               std::set<int> &unmatchedTrajectories, std::vector<cv::Point> &matchedPairs) {
     int det_num = tracker_boxes.size();
     int trk_num = predict_boxes.size();
     std::vector<std::vector<double>> similar_mat(trk_num, std::vector<double>(det_num, 0));
@@ -135,8 +133,8 @@ void ObjectTracker::FeatureMatching(const std::vector<TrackerRes> &predict_boxes
     Alignment(similar_mat, unmatchedDetections, unmatchedTrajectories, matchedPairs, det_num, trk_num, false);
 }
 
-void ObjectTracker::IOUMatching(const std::vector<TrackerRes> &predict_boxes, std::set<int> &unmatchedDetections,
-                                std::set<int> &unmatchedTrajectories, std::vector<cv::Point> &matchedPairs) {
+void DeepSort::IOUMatching(const std::vector<TrackerRes> &predict_boxes, std::set<int> &unmatchedDetections,
+                           std::set<int> &unmatchedTrajectories, std::vector<cv::Point> &matchedPairs) {
     int det_num = unmatchedDetections.size();
     int trk_num = unmatchedTrajectories.size();
     if (det_num == 0 or trk_num == 0)
@@ -157,8 +155,8 @@ void ObjectTracker::IOUMatching(const std::vector<TrackerRes> &predict_boxes, st
     Alignment(iou_mat, unmatchedDetections, unmatchedTrajectories, matchedPairs, det_num, trk_num, true);
 }
 
-void ObjectTracker::update(const std::vector<DetectRes> &det_boxes, const std::vector<cv::Mat> &det_features,
-                           int width, int height) {
+void DeepSort::update(const std::vector<DetectRes> &det_boxes, const std::vector<cv::Mat> &det_features,
+                      int width, int height) {
     tracker_boxes.clear();
     int index = 0;
     for (const auto &det_box : det_boxes) {
@@ -225,15 +223,7 @@ void ObjectTracker::update(const std::vector<DetectRes> &det_boxes, const std::v
     }
 }
 
-int32_t ObjectTracker::Init() {
-    max_age = cfg_.object_track_param.deepsort_param.max_age;
-    iou_threshold = cfg_.object_track_param.deepsort_param.iou_threshold;
-    sim_threshold = cfg_.object_track_param.deepsort_param.sim_threshold;
-    agnostic = cfg_.object_track_param.deepsort_param.agnostic;
-    return 0;
-}
-
-int32_t ObjectTracker::Track(std::vector<utils::Box> const &detect_boxes, std::vector<cv::Mat> const &feats, int32_t width, int32_t height) {
+int32_t DeepSort::Track(std::vector<utils::Box> const &detect_boxes, std::vector<cv::Mat> const &feats, int32_t width, int32_t height) {
     assert(detect_boxes.size() == feats.size());
     std::vector<DetectRes> det_boxes;
     for (auto const &det_box : detect_boxes) {
@@ -251,7 +241,7 @@ int32_t ObjectTracker::Track(std::vector<utils::Box> const &detect_boxes, std::v
     return 0;
 }
 
-std::vector<TrackerRes> ObjectTracker::GetTrackBoxes() {
+std::vector<TrackerRes> DeepSort::GetTrackBoxes() {
     return tracker_boxes;
 }
 

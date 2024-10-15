@@ -12,20 +12,19 @@
 
 namespace ns_uestc_vhm {
 
-class ObjectTracker : public ObjectTrackStrategy {
+class DeepSort : public ObjectTrackStrategy {
 public:
-    explicit ObjectTracker(ModelCfgItem const &cfg);
-    virtual ~ObjectTracker();
+    explicit DeepSort(ModelCfgItem const &cfg);
+    virtual ~DeepSort();
 
-    ObjectTracker(ObjectTracker const &) = delete;
-    ObjectTracker &operator=(ObjectTracker const &) = delete;
-    ObjectTracker(ObjectTracker &&) = delete;
-    ObjectTracker &operator=(ObjectTracker &&) = delete;
+    DeepSort(DeepSort const &) = delete;
+    DeepSort &operator=(DeepSort const &) = delete;
+    DeepSort(DeepSort &&) = delete;
+    DeepSort &operator=(DeepSort &&) = delete;
 
     void update(const std::vector<DetectRes> &det_boxes, const std::vector<cv::Mat> &det_features,
                 int width, int height);
 
-    int32_t Init() override;
     int32_t Track(std::vector<utils::Box> const &detect_boxes, std::vector<cv::Mat> const &feats, int32_t width, int32_t height) override;
     std::vector<TrackerRes> GetTrackBoxes() override;
 

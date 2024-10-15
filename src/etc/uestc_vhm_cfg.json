@@ -18,7 +18,10 @@
             "num_class": 80,
             "conf_thresh": 0.25,
             "iou_thresh": 0.45,
-            "input_output_names": ["input", "output0"],
+            "input_output_names": [
+                "input",
+                "output0"
+            ],
             "path": "/workspace/model_file/yolo/yolov8n.trt",
             "batch": 8,
             "save_dir": "/tmp/uestc_vhm_save_dir",
@@ -34,11 +37,13 @@
         }
     },
     "object_track": {
+        "enbaled_strategy_name": "deepsort",
         "deepsort": {
             "max_age": 70,
             "iou_threshold": 0.3,
             "sim_threshold": 0.4,
             "agnostic": false
-        }
+        },
+        "bytetrack": {}
     }
 }
