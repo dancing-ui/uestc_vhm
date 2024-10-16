@@ -95,8 +95,12 @@ cd ../../bin
 </div>
 
 ## 模型配置
-- 本项目所使用模型均通过官方仓库本地编译得来，且由于本项目使用了git-lfs来管理模型文件和视频文件，因此初期阶段（若更换TensorRT版本，需要重新生成模型，[模型生成教程](model_file/how_to_generate_model.md)）无需下载模型文件和测试视频，模型文件存放在model_file目录下，视频文件在test_video目录下。
+- 本项目所使用模型均通过官方仓库本地编译得来，且由于本项目使用了git lfs来管理模型文件、视频文件和第三方库文件，因此初期阶段（若更换TensorRT版本，需要重新生成模型，[模型生成教程](model_file/how_to_generate_model.md)）无需在其他地方下载模型文件和测试视频，用仓库中现成的就行。
+  - 模型文件存放在model_file目录下，视频文件在test_video目录下。
 - 可以通过修改src/etc/uestc_vhm_cfg.json配置文件的路径来自定义配置（流媒体配置、模型配置）。
+## 第三方库编译
+- 本项目使用了fast-reid、cnpy第三方库，如果仓库里的库文件无法使用，需要在容器中重新编译一下，替换仓库中的原始库文件。
+  - fast-reid、cnpy本地编译教程：[链接](https://github.com/JDAI-CV/fast-reid/blob/master/projects/FastRT/README.md)
 ## 项目编译
 - 提供两种编译方式，一种是用VSCode的.vscode配置文件，一种是使用脚本文件。
 ```bash
@@ -112,10 +116,10 @@ cd /workspace/build/src
 ./uestc_vhm --config=/workspace/src/etc/uestc_vhm_cfg.json
 ```
 ## 程序退出
-```bash
+共有2种方式退出程序
 1. 使用ctrl+c退出uestc_vhm程序
-2. 使用 kill -2 uestc_vhm_pid 命令退出uestc_vhm程序
-
+2. 使用 kill -2 uestc_vhm_pid 命令退出uestc_vhm程序，如下命令：
+```bash
 ps -e|grep uestc_vhm|awk '{print $1}'|xargs kill -2
 ```
 ## 程序资源占用
