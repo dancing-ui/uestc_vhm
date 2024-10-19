@@ -14,7 +14,7 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list \
     && sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
 # install additional packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends apt-utils build-essential cmake git zsh curl ca-certificates net-tools wget vim openssh-client    
+    && apt-get -y install --no-install-recommends apt-utils build-essential cmake git zsh curl ca-certificates net-tools wget vim openssh-client cppcheck    
 # configure zsh
 RUN chsh -s /bin/zsh \ 
     && sh -c "$(curl -fsSL https://install.ohmyz.sh/)" \
@@ -59,8 +59,9 @@ RUN wget https://apt.llvm.org/llvm.sh \
     && update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-18 100 \
     && update-alternatives --install /usr/bin/clang clang /usr/bin/clang-18 100 \
     && update-alternatives --install /usr/bin/clangd clangd /usr/bin/clangd-18 100 \
-    && apt-get install -y clang-format-18 \
+    && apt-get install -y clang-format-18 clang-tidy-18 \
     && update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 \
+    && update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 \
     && rm "$(pwd)/llvm.sh"
 # clean apt
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*

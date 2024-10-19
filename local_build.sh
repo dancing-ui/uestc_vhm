@@ -44,27 +44,65 @@ cmake -S . -B build \
 -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ \
 -DBUILD_PLATFORM=x86_64 \
 -DCMAKE_BUILD_TYPE=Release \
-> "/tmp/uestc_vhm_cmake.log" 2>&1
+> "/tmp/uestc_vhm_build.log" 2>&1
 ret=$?
-log_save_without_time "$(cat "/tmp/uestc_vhm_cmake.log")"
+log_save_without_time "$(cat "/tmp/uestc_vhm_build.log")"
 if [[ $ret -ne 0 ]]; then
     log_error "cmake failed, ret=$ret"
     exit 1
 fi
+log_info "cmake end"
+
 # format
 cmake --build build \
 --target format \
 -- -j $(nproc) \
+> "/tmp/uestc_vhm_build.log" 2>&1
+ret=$?
+log_save_without_time "$(cat "/tmp/uestc_vhm_build.log")"
+if [[ $ret -ne 0 ]]; then
+    log_error "format failed, ret=$ret"
+    exit 1
+fi
+log_info "format end"
+
+# cppcheck
+cmake --build build \
+--target cppcheck \
+-- -j $(nproc) \
+> "/tmp/uestc_vhm_build.log" 2>&1
+ret=$?
+log_save_without_time "$(cat "/tmp/uestc_vhm_build.log")"
+if [[ $ret -ne 0 ]]; then
+    log_error "cppcheck failed, ret=$ret"
+    exit 1
+fi
+log_info "cppcheck end"
+
+# # clang-tidy
+# cmake --build build \
+# --target tidy \
+# -- -j $(nproc) \
+# > "/tmp/uestc_vhm_build.log" 2>&1
+# ret=$?
+# log_save_without_time "$(cat "/tmp/uestc_vhm_build.log")"
+# if [[ $ret -ne 0 ]]; then
+#     log_error "tidy failed, ret=$ret"
+#     exit 1
+# fi
+# log_info "tidy end"
+
 # make
 cmake --build build \
 -- -j $(nproc) \
-> "/tmp/uestc_vhm_make.log" 2>&1
+> "/tmp/uestc_vhm_build.log" 2>&1
 ret=$?
-log_save_without_time "$(cat "/tmp/uestc_vhm_make.log")"
+log_save_without_time "$(cat "/tmp/uestc_vhm_build.log")"
 if [[ $ret -ne 0 ]]; then
     log_error "make failed, ret=$ret"
     exit 1
 fi
+log_info "make end"
 
 end_time=$(date +'%s')
 wasted_time=$(( end_time - start_time ))
