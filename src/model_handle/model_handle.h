@@ -3,6 +3,8 @@
 
 #include "model_manager.h"
 #include "model_handle_common.h"
+#include "model_service.h"
+#include <memory>
 namespace ns_uestc_vhm {
 
 class ModelHandle {
@@ -20,6 +22,9 @@ public:
 
 private:
     std::unique_ptr<ModelManager> model_manager_;
+    std::unique_ptr<ObjectTrackService> object_track_service_;
+    WorkMode work_mode_;
+    ModelHandleRes model_handle_res_;
 };
 
 } // ns_uestc_vhm

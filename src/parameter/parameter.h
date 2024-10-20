@@ -65,6 +65,12 @@ struct ObjectTrackParameter {
     DeepSortParameter deepsort_param;
 };
 
+enum class WorkMode {
+    kNoneMode = 0,
+    kObjectTrack = 1,
+    kPersonReid = 2,
+};
+
 struct ModelCfgItem {
     // yolo
     InitParameter param;
@@ -72,10 +78,13 @@ struct ModelCfgItem {
     ReidParameter reid_param;
     // object track
     ObjectTrackParameter object_track_param;
+    // work mode
+    WorkMode work_mode{WorkMode::kNoneMode};
 };
 
 struct ParamOpt {
     std::string config;
+    WorkMode work_mode{WorkMode::kNoneMode};
 };
 
 extern int32_t ParseOpt(int32_t argc, char **argv, ParamOpt &opt);

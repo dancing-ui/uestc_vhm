@@ -1,5 +1,6 @@
 #include "rtmp_handler.h"
 #include "log.h"
+#include "model_handle_common.h"
 #include "utils.h"
 
 namespace ns_uestc_vhm {
@@ -14,37 +15,37 @@ RtmpHandler::~RtmpHandler() {
 }
 int32_t RtmpHandler::Init(StreamMediaCfgItem const &stream_media_cfg, ModelCfgItem const &model_cfg) {
     int32_t ret{0};
-    target_data_cb_ = [this](std::vector<std::vector<TrackerRes>> const &objectss, std::vector<cv::Mat> const &imgsBatch) -> int32_t {
-        return HandledDataOutput(objectss, imgsBatch);
+    model_handle_cb_ = [this](ModelHandleRes const &model_handle_res) -> int32_t {
+        return HandleDataOutput(model_handle_res);
     };
     // init stream
     capture_.open(stream_media_cfg.in);
     if (!capture_.isOpened()) {
         PRINT_ERROR("open rtmp's stream failed, stream_id=%d\n", stream_media_cfg.id);
-        return -2;
+        return -1;
     }
     // init parameter
     ret = InitParameter(stream_media_cfg, model_cfg);
     if (ret < 0) {
         PRINT_ERROR("init rtmp's stream parameter failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
-        return -1;
+        return -2;
     }
     // init model
     model_handler_ = std::make_unique<ModelHandle>();
     if (model_handler_.get() == nullptr) {
         PRINT_ERROR("create model_handler_ failed, stream_id=%d\n", stream_media_cfg_.id);
-        return -4;
+        return -3;
     }
     ret = model_handler_->Init(model_cfg_);
     if (ret < 0) {
         PRINT_ERROR("init model_handler_ failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
-        return -5;
+        return -4;
     }
     // open output stream
     ret = OpenOutputStream();
     if (ret < 0) {
         PRINT_ERROR("open rtmp's stream failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
-        return -6;
+        return -5;
     }
     return 0;
 }
@@ -107,7 +108,7 @@ int32_t RtmpHandler::RawDataInput(std::vector<cv::Mat> &imgs_batch) {
         PRINT_ERROR("model_handler_ is nullptr, stream_id=%d\n", stream_media_cfg_.id);
         return -1;
     }
-    ret = model_handler_->RawDataInput(imgs_batch, target_data_cb_);
+    ret = model_handler_->RawDataInput(imgs_batch, model_handle_cb_);
     if (ret < 0) {
         PRINT_ERROR("RawDataInput failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
         return -2;
@@ -115,40 +116,52 @@ int32_t RtmpHandler::RawDataInput(std::vector<cv::Mat> &imgs_batch) {
     return 0;
 }
 
-int32_t RtmpHandler::HandledDataOutput(std::vector<std::vector<TrackerRes>> const &objectss, std::vector<cv::Mat> const &imgsBatch) {
+int32_t RtmpHandler::HandleDataOutput(ModelHandleRes const &model_handle_res) {
     int32_t ret{0};
-    // add rectangle for objectss
-    cv::Scalar color = cv::Scalar(0, 255, 0);
-    cv::Point bbox_points[1][4];
-    for (size_t bi = 0; bi < imgsBatch.size(); bi++) {
-        if (!objectss.empty()) {
-            for (auto &box : objectss[bi]) {
-                if (model_cfg_.param.num_class == 91) {
-                    color = utils::Colors::color91[box.classes];
-                } else if (model_cfg_.param.num_class == 80) {
-                    color = utils::Colors::color80[box.classes];
-                } else if (model_cfg_.param.num_class == 20) {
-                    color = utils::Colors::color80[box.classes];
+    switch (model_cfg_.work_mode) {
+    case WorkMode::kObjectTrack: {
+        cv::Scalar color = cv::Scalar(0, 255, 0);
+        cv::Point bbox_points[1][4];
+        for (size_t bi = 0; bi < model_handle_res.object_track_res.imgs_batch.size(); bi++) {
+            if (!model_handle_res.object_track_res.track_res.empty()) {
+                for (auto &box : model_handle_res.object_track_res.track_res[bi]) {
+                    if (model_cfg_.param.num_class == 91) {
+                        color = utils::Colors::color91[box.classes];
+                    } else if (model_cfg_.param.num_class == 80) {
+                        color = utils::Colors::color80[box.classes];
+                    } else if (model_cfg_.param.num_class == 20) {
+                        color = utils::Colors::color80[box.classes];
+                    }
+                    float left = box.x - box.w / 2;
+                    float top = box.y - box.h / 2;
+                    cv::rectangle(model_handle_res.object_track_res.imgs_batch[bi], cv::Point(left, top), cv::Point(left + box.w, top + box.h), color, 2, cv::LINE_AA);
+                    cv::String det_info = std::to_string(box.object_id);
+                    bbox_points[0][0] = cv::Point(left, top);
+                    bbox_points[0][1] = cv::Point(left + det_info.size() * 11, top);
+                    bbox_points[0][2] = cv::Point(left + det_info.size() * 11, top - 15);
+                    bbox_points[0][3] = cv::Point(left, top - 15);
+                    std::vector<std::vector<cv::Point>> pts;
+                    pts.push_back(std::vector<cv::Point>(bbox_points[0], bbox_points[0] + 4));
+                    cv::fillPoly(model_handle_res.object_track_res.imgs_batch[bi], pts, color);
+                    cv::putText(model_handle_res.object_track_res.imgs_batch[bi], det_info, bbox_points[0][0], cv::FONT_HERSHEY_DUPLEX, 0.6, cv::Scalar(255, 255, 255), 1, cv::LINE_AA);
                 }
-                float left = box.x - box.w / 2;
-                float top = box.y - box.h / 2;
-                cv::rectangle(imgsBatch[bi], cv::Point(left, top), cv::Point(left + box.w, top + box.h), color, 2, cv::LINE_AA);
-                cv::String det_info = std::to_string(box.object_id);
-                bbox_points[0][0] = cv::Point(left, top);
-                bbox_points[0][1] = cv::Point(left + det_info.size() * 11, top);
-                bbox_points[0][2] = cv::Point(left + det_info.size() * 11, top - 15);
-                bbox_points[0][3] = cv::Point(left, top - 15);
-                std::vector<std::vector<cv::Point>> pts;
-                pts.push_back(std::vector<cv::Point>(bbox_points[0], bbox_points[0] + 4));
-                cv::fillPoly(imgsBatch[bi], pts, color);
-                cv::putText(imgsBatch[bi], det_info, bbox_points[0][0], cv::FONT_HERSHEY_DUPLEX, 0.6, cv::Scalar(255, 255, 255), 1, cv::LINE_AA);
+            }
+            ret = PushOneFrame(model_handle_res.object_track_res.imgs_batch[bi]);
+            if (ret < 0) {
+                PRINT_ERROR("push one frame failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
+                return -1;
             }
         }
-        ret = PushOneFrame(imgsBatch[bi]);
-        if (ret < 0) {
-            PRINT_ERROR("push one frame failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
-            return -1;
-        }
+        break;
+    }
+    case WorkMode::kPersonReid: {
+        // TODO: add person reid
+        break;
+    }
+    case WorkMode::kNoneMode: {
+        PRINT_INFO("none work mode, stream_id=%d\n", stream_media_cfg_.id);
+        break;
+    }
     }
     return 0;
 }

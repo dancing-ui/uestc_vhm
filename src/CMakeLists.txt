@@ -14,6 +14,7 @@ set(SRC_DIR
     model_handle/model_driver/yolov8
     model_handle/model_driver/fast_reid
     model_handle/model_manager
+    model_handle/model_service
     object_track
     object_track/deepsort
     parameter

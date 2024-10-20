@@ -76,10 +76,10 @@ int32_t YOLOV8::BatchInference(std::vector<cv::Mat> &imgs_batch) {
     utils::DeviceTimer d_t3;
     postprocess(imgs_batch);
     double t3 = d_t3.getUsedTime();
-    sample::gLogInfo << "pre_process time = " << t1 / cfg_.param.batch_size << "ms; "
-                     << "infer time = " << t2 / cfg_.param.batch_size << "ms; "
-                     << "post_process time = " << t3 / cfg_.param.batch_size << "ms; "
-                     << std::endl;
+    // sample::gLogInfo << "pre_process time = " << t1 / cfg_.param.batch_size << "ms; "
+    //                  << "infer time = " << t2 / cfg_.param.batch_size << "ms; "
+    //                  << "post_process time = " << t3 / cfg_.param.batch_size << "ms; "
+    //                  << std::endl;
     return 0;
 }
 

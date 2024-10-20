@@ -5,6 +5,7 @@
 #include "log.h"
 
 #include "nlohmann/json.hpp"
+#include "parameter.h"
 
 namespace ns_uestc_vhm {
 
@@ -255,6 +256,8 @@ int32_t Config::Parse() {
             }
         }
     }
+
+    model_cfg_item_.work_mode = opt_.work_mode;
     return 0;
 }
 

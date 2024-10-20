@@ -23,7 +23,7 @@ public:
     int32_t Stop() override;
     int32_t InitParameter(StreamMediaCfgItem const &stream_media_cfg, ModelCfgItem const &model_cfg);
     int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch);
-    int32_t HandledDataOutput(std::vector<std::vector<TrackerRes>> const &objectss, std::vector<cv::Mat> const &imgsBatch);
+    int32_t HandleDataOutput(ModelHandleRes const &model_handle_res);
     int32_t PushOneFrame(cv::Mat const &frame);
 
 private:
@@ -46,7 +46,7 @@ private:
     std::unique_ptr<ModelHandle> model_handler_;
     FILE *fp_{nullptr};
 
-    ModelHandleCb target_data_cb_;
+    ModelHandleCb model_handle_cb_;
 
     std::atomic<bool> is_finished_{false};
 };

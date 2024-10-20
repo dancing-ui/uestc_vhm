@@ -1,7 +1,9 @@
 #ifndef _UESTC_VHM_MODEL_HANDLE_COMMON_H_
 #define _UESTC_VHM_MODEL_HANDLE_COMMON_H_
 
-#include "utils.h"
+#include <vector>
+#include <functional>
+#include <opencv2/opencv.hpp>
 
 namespace ns_uestc_vhm {
 struct ClassRes {
@@ -25,7 +27,16 @@ struct TrackerRes : public DetectRes {
     int object_id;
 };
 
-using ModelHandleCb = std::function<int32_t(std::vector<std::vector<TrackerRes>> const &, std::vector<cv::Mat> const &)>;
+struct ObjectTrackRes {
+    std::vector<std::vector<TrackerRes>> track_res;
+    std::vector<cv::Mat> imgs_batch;
+};
+
+struct ModelHandleRes {
+    ObjectTrackRes object_track_res;
+};
+
+using ModelHandleCb = std::function<int32_t(ModelHandleRes const &)>;
 
 } // ns_uestc_vhm
 
