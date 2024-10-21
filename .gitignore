@@ -40,3 +40,4 @@ fast-reid
 DeepSORT
 deepsort-tensorrt
 deepsort_bak
+faiss

@@ -24,6 +24,22 @@
 - 特征向量提取：支持Fast-Reid提取目标框的特征向量。
 - 目标检测：支持Yolov8n模型实现目标检测。
 - 目标跟踪：支持DeepSORT算法实现目标跟踪，后续考虑添加ByteTrack算法。
+## 行人重识别服务
+检测到行人之后
+- 首先在数据库里检索是否有相似度比较高的人
+  - 这一步需要用向量数据库来做，若出现，则给出对应的id，否则id为无效值
+- 之后给系统后端发送一个http消息，http消息的json格式如下：
+  ```json
+  {
+    "PersonId": 1 // 行人id
+    "Picture": "xxx"// base64码后的行人图片
+    "CameraIP": "192.169.0.0" //摄像头地址
+    "TimeStamp": "xxx"//时间戳
+  }
+  ```
+- 判定这段视频里后面几秒内是否重复出现该行人，注意以下事项：
+  - 视频可见范围内，只发一次http消息
+  - 相似度高的人不管在摄像头中消失多少次，都是一个相同的ID
 # 开发环境
 - CPU: 13th Gen Intel(R) Core(TM) i5-13500HX   2.50 GHz
 - GPU: NVIDIA GeForce RTX 4060 Laptop GPU

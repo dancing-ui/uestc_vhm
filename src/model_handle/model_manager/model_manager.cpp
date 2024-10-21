@@ -43,33 +43,33 @@ int32_t ModelManager::Init(ModelCfgItem const &cfg) {
     return 0;
 }
 
-int32_t ModelManager::RawDataInput(std::vector<cv::Mat> &imgs_batch) {
+int32_t ModelManager::ObjectDetectInput(std::vector<cv::Mat> &imgs_batch) {
     int32_t ret{0};
     if (yolo_driver_.get() == nullptr) {
         PRINT_ERROR("yolo_driver_ is nullptr\n");
         return -1;
     }
-
-    if (reid_driver_.get() == nullptr) {
-        PRINT_ERROR("reid_driver_ is nullptr\n");
-        return -2;
-    }
-
     ret = yolo_driver_->BatchInference(imgs_batch);
     if (ret < 0) {
         PRINT_ERROR("yolo_driver_ BatchInference failed, ret=%d\n", ret);
-        return -3;
+        return -2;
     }
     detect_boxes_ = yolo_driver_->getObjectss();
+    return 0;
+}
 
-    ret = reid_driver_->BatchInference(imgs_batch, detect_boxes_);
+int32_t ModelManager::FeatureExtractInput(std::vector<cv::Mat> &imgs_batch, std::vector<std::vector<utils::Box>> const &detect_boxes) {
+    int32_t ret{0};
+    if (reid_driver_.get() == nullptr) {
+        PRINT_ERROR("reid_driver_ is nullptr\n");
+        return -1;
+    }
+    ret = reid_driver_->BatchInference(imgs_batch, detect_boxes);
     if (ret < 0) {
         PRINT_ERROR("reid_driver_ BatchInference failed, ret=%d\n", ret);
-        return -4;
+        return -2;
     }
     feats_lists_ = reid_driver_->GetFeatLists();
-
-    Reset();
     return 0;
 }
 
@@ -82,7 +82,7 @@ std::vector<std::vector<cv::Mat>> ModelManager::GetFeatsLists() {
 }
 
 void ModelManager::Reset() {
-    if(yolo_driver_.get()!= nullptr) {
+    if (yolo_driver_.get() != nullptr) {
         yolo_driver_->reset();
     }
 }

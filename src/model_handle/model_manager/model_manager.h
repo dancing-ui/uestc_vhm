@@ -18,7 +18,9 @@ public:
     ModelManager &operator=(ModelManager &&) = delete;
 
     int32_t Init(ModelCfgItem const &cfg);
-    int32_t RawDataInput(std::vector<cv::Mat> &imgs_batch);
+    
+    int32_t ObjectDetectInput(std::vector<cv::Mat> &imgs_batch);
+    int32_t FeatureExtractInput(std::vector<cv::Mat> &imgs_batch, std::vector<std::vector<utils::Box>> const &detect_boxes);
 
     std::vector<std::vector<utils::Box>> GetDetectBoxes();
     std::vector<std::vector<cv::Mat>> GetFeatsLists();

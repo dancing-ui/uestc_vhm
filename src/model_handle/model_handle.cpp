@@ -51,24 +51,32 @@ int32_t ModelHandle::RawDataInput(std::vector<cv::Mat> &imgs_batch, ModelHandleC
         PRINT_ERROR("model_manager_ is nullptr\n");
         return -1;
     }
-    ret = model_manager_->RawDataInput(imgs_batch);
-    if (ret < 0) {
-        PRINT_ERROR("model_manager_ RawDataInput failed, ret=%d\n", ret);
-        return -2;
-    }
     switch (work_mode_) {
     case WorkMode::kObjectTrack: {
+        ret = model_manager_->ObjectDetectInput(imgs_batch);
+        if (ret < 0) {
+            PRINT_ERROR("model_manager_ ObjectDetectInput failed, ret=%d\n", ret);
+            return -3;
+        }
+        auto detect_boxes = model_manager_->GetDetectBoxes();
+        ret = model_manager_->FeatureExtractInput(imgs_batch, detect_boxes);
+        if (ret < 0) {
+            PRINT_ERROR("model_manager_ FeatureExtractInput failed, ret=%d\n", ret);
+            return -4;
+        }
+        auto feats_lists = model_manager_->GetFeatsLists();
         if (object_track_service_.get() == nullptr) {
             PRINT_ERROR("object_track_service_ is nullptr\n");
             return -3;
         }
-        ret = object_track_service_->Track(imgs_batch, model_manager_->GetDetectBoxes(), model_manager_->GetFeatsLists());
+        ret = object_track_service_->Track(imgs_batch, detect_boxes, feats_lists);
         if (ret < 0) {
             PRINT_ERROR("object_track_ctx_ track failed, ret=%d\n", ret);
             return -4;
         }
         model_handle_res_.object_track_res.imgs_batch = imgs_batch;
         model_handle_res_.object_track_res.track_res = object_track_service_->GetTrackBoxesLists();
+        model_manager_->Reset(); // important
         break;
     }
     case WorkMode::kPersonReid: {
