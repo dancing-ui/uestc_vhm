@@ -26,6 +26,21 @@ private:
     std::vector<std::vector<TrackerRes>> track_boxes_lists_;
 };
 
+// class PersonReidService {
+// public:
+//     PersonReidService() = default;
+//     ~PersonReidService();
+
+//     PersonReidService(PersonReidService const &) = delete;
+//     PersonReidService &operator=(PersonReidService const &) = delete;
+//     PersonReidService(PersonReidService &&) = delete;
+//     PersonReidService &operator=(PersonReidService &&) = delete;
+
+//     int32_t Init(ModelCfgItem const &cfg);
+//     int32_t Reid(std::vector<cv::Mat> const &imgs_batch, std::vector<std::vector<utils::Box>> const &detect_boxes, std::vector<std::vector<cv::Mat>> const &feats_lists);
+//     std::vector<std::vector<utils::Box>> GetReidBoxesLists
+// };
+
 } // ns_uestc_vhm
 
 #endif // _UESTC_VHM_MODEL_SERVICE_H_

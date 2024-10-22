@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 
 set(SRC_DIR 
     3rd_party
-    3rd_party/cnpy/include
     3rd_party/fast_reid/include
     common 
     config
@@ -48,8 +47,10 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 list(APPEND DEPEND_LIB_LIST ${CUDA_ALL_LIBS} ${OpenCV_LIBRARIES})
 
-list(APPEND DEPEND_LIB_LIST ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/cnpy/lib/libcnpy.so)
 list(APPEND DEPEND_LIB_LIST ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/fast_reid/lib/libFastRTEngine.so)
+
+include_directories(/usr/local/faiss/include)
+list(APPEND DEPEND_LIB_LIST /usr/local/faiss/lib/libfaiss.so)
 
 message(STATUS "DEPEND_LIB_LIST: ${DEPEND_LIB_LIST}")
 
@@ -57,13 +58,11 @@ add_executable(${PROJECT_NAME}
     uestc_vhm.cpp
     ${SOURCE_LIST}
     ${TensorRT_ROOT}/samples/common/logger.cpp 
-    # ${TensorRT_ROOT}/samples/common/sampleOptions.cpp
-    # ${TensorRT_ROOT}/samples/common/sampleUtils.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} ${DEPEND_LIB_LIST})
-set_property(TARGET ${PROJECT_NAME} PROPERTY CUDA_ARCHITECTURES 50 61 72 75 89) # 89 for NVIDIA GeForce RTX 4060 
-target_compile_options(${PROJECT_NAME} PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--default-stream per-thread -lineinfo; --use_fast_math --disable-warnings>)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CUDA_ARCHITECTURES 72 75 89) # 89 for NVIDIA GeForce RTX 4060
+target_compile_options(${PROJECT_NAME} PUBLIC $<$<COMPILE_LANGUAGE:CUDA>:--default-stream per-thread -lineinfo; --use_fast_math --disable-warnings -Wno-deprecated-gpu-targets>)
 
 else()
 

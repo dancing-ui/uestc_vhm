@@ -9,7 +9,7 @@ git clone git@github.com:JDAI-CV/fast-reid.git
 2. 下载[pth预训练模型文件](https://github.com/JDAI-CV/fast-reid/blob/master/MODEL_ZOO.md)，把下载好的pth文件放到model目录下，假设名字为duke_sbs_R50-ibn.pth
 ```bash
 mkdir -p /workspace/fast-reid/projects/FastRT/model
-cp /workspaceduke_sbs_R50-ibn.pth /workspace/fast-reid/projects/FastRT/model
+cp /workspace/duke_sbs_R50-ibn.pth /workspace/fast-reid/projects/FastRT/model
 ```
 3. pth文件转wts文件，[教程](https://github.com/JDAI-CV/fast-reid/blob/master/projects/FastRT/tools/How_to_Generate.md)
    1. 装pytorch的容器

@@ -5,8 +5,8 @@
             "enable": true,
             "type": "rtmp",
             "name": "unknown",
-            "in": "rtmp://172.17.0.3/camera/camera_stream",
-            "out": "rtmp://172.17.0.3/object_track/object_track_stream",
+            "in": "rtmp://172.17.0.4/camera/camera_stream",
+            "out": "rtmp://172.17.0.4/object_track/object_track_stream",
             "dst_width": 1920,
             "dst_height": 1080
         }
