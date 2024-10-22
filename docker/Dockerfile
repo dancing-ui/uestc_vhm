@@ -14,7 +14,7 @@ RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list \
     && sed -i 's/security.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list
 # install additional packages.
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-    && apt-get -y install --no-install-recommends apt-utils build-essential git curl ca-certificates net-tools wget vim openssh-client cppcheck
+    && apt-get -y install --no-install-recommends apt-utils build-essential git git-lfs curl ca-certificates net-tools wget vim openssh-client cppcheck
 # configure zsh
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends zsh \
