@@ -20,13 +20,14 @@ public:
     PersonReidCtx(PersonReidCtx &&) = delete;
     PersonReidCtx &operator=(PersonReidCtx &&) = delete;
 
+    int32_t Init(PersonReidParameter const &cfg);
     int32_t Reid(std::vector<cv::Mat> const &imgs_batch, std::vector<std::vector<utils::Box>> const &detect_boxes, std::vector<std::vector<cv::Mat>> const &feats_lists);
 
-    void SetCfg(PersonReidParameter const &cfg);
     std::vector<std::vector<TrackerRes>> GetReidBoxesLists() const;
 
 private:
     std::string convertMat2B64(cv::Mat const &mat);
+    int64_t confirmPersonId(std::vector<dbase::Recall> const &recall);
 
     PersonReidParameter cfg_;
     dbase::DataBase *database_;

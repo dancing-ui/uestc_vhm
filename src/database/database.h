@@ -45,13 +45,12 @@ struct ClusterDict {
     std::unordered_map<int64_t, std::string> ids_to_cfids;
 
     void init() {
-        this->_accumulator = 0;
     }
 
     void rehash(int64_t scale);
     void clear();
     void erase(std::string const &cid, std::string const &fid);
-    void add(std::string const &cid, std::string const &fid);
+    void add(std::string const &cid, std::string const &fid, int64_t person_id_accumulator);
 
     bool has(int64_t id);
     bool has(std::string const &cid);
@@ -61,7 +60,7 @@ struct ClusterDict {
     const std::string &query(int64_t const &id);
     const int64_t &query(std::string const &cid, std::string const &fid);
 
-    int64_t size(std::string &cid) {
+    int64_t size(std::string const &cid) {
         return this->clusters.at(cid).size();
     }
 
@@ -72,8 +71,6 @@ struct ClusterDict {
     int64_t total_size() {
         return this->cfids_to_ids.size();
     }
-
-    int64_t _accumulator = 0;
 };
 
 class DataBase {
@@ -94,7 +91,7 @@ public:
     std::string db_update_time = "";
     std::string db_delete_time = "";
 
-    std::string search_device = "cpu";
+    std::string search_device = "gpu";
     std::string feature_version = "";
 
     // 0: SMALL_SCALE, 1: MEDIUM_SCALE,
@@ -107,26 +104,32 @@ public:
     int32_t feature_dim = 0;
 
     void create(
-        std::string db_name,
+        std::string const &db_name,
         int32_t feature_dim,
-        std::string search_device,
-        std::string feature_version,
+        std::string const &search_device,
+        std::string const &feature_version,
         int32_t search_type,
-        std::string similarity_type);
+        std::string const &similarity_type);
 
     void clear();
-    int32_t batch_add(std::vector<std::string> const &cids, std::vector<std::string> const &fids, std::vector<std::string> const &b64_features);
-    int32_t batch_add_and_save(std::vector<std::string> const &cids, std::vector<std::string> const &fids, std::vector<std::string> const &b64_features);
-    // void add(std::string &cid, std::string &fid, std::vector<float> &feature);
-    // void remove(std::string &cid, std::string &fid);
-    // void remove(std::string &cid);
-    std::vector<std::vector<Recall>> batch_search(std::vector<std::string> const &b64_features, int32_t topk);
-    int32_t restore(std::string &save_path);
+    int32_t batch_add_vector(std::vector<std::string> const &cids, std::vector<std::string> const &fids, std::vector<std::string> const &b64_features);
+    int32_t batch_add_vector_and_save(std::vector<std::string> const &cids, std::vector<std::string> const &fids, std::vector<std::string> const &b64_features);
+    std::vector<std::vector<Recall>> batch_search_vector(std::vector<std::string> const &b64_features, int32_t topk);
+
+    void put(std::string const &key, std::string const &value);
+    void put(std::string const &key, int64_t value);
+    void search(std::string const &key, int64_t &value);
+    void erase(std::string const &key);
+    void update(std::string const &key, int64_t value);
+
+    int64_t query(std::string const &cid, std::string const &fid);
+
+    int32_t restore(std::string const &db_name);
     int64_t db_size() {
         return this->clusters.total_size();
     }
 
-    int64_t db_cluster_size(std::string &cid) {
+    int64_t db_cluster_size(std::string const &cid) {
         return this->clusters.size(cid);
     }
 
@@ -157,14 +160,14 @@ public:
     DataBase *at(std::string const &db_name);
     bool has(std::string const &db_name);
     void create(
-        std::string db_name,
+        std::string const &db_name,
         int32_t feature_dim,
-        std::string search_device,
-        std::string feature_version,
+        std::string const &search_device,
+        std::string const &feature_version,
         int32_t search_type,
-        std::string similarity_type);
-    void restore(std::string db_name);
-    void purge(std::string &db_name);
+        std::string const &similarity_type);
+    void restore(std::string const &db_name);
+    void purge(std::string const &db_name);
 
     int32_t num_of_dbs() {
         return this->dbs.size();

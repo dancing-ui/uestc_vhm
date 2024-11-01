@@ -21,7 +21,6 @@ void ClusterDict::clear() {
     this->clusters.clear();
     this->cfids_to_ids.clear();
     this->ids_to_cfids.clear();
-    this->_accumulator = 0;
 }
 
 const std::vector<std::string> &ClusterDict::query(std::string const &cid) {
@@ -93,9 +92,9 @@ void ClusterDict::erase(std::string const &cid, std::string const &fid) {
         this->clusters.erase(cid);
 }
 
-void ClusterDict::add(std::string const &cid, std::string const &fid) {
+void ClusterDict::add(std::string const &cid, std::string const &fid, int64_t person_id_accumulator) {
     std::string cfid = cid + DELIMITER + fid;
-    int64_t id = this->_accumulator;
+    int64_t id = person_id_accumulator;
     this->cfids_to_ids.insert(std::make_pair(cfid, id));
     this->ids_to_cfids.insert(std::make_pair(id, cfid));
 
@@ -105,7 +104,6 @@ void ClusterDict::add(std::string const &cid, std::string const &fid) {
     }
 
     this->clusters.at(cid).push_back(fid);
-    this->_accumulator += 1;
 }
 
 void DataBase::SetCfg(DataBaseParameter const &cfg) {
@@ -118,12 +116,12 @@ std::string DataBase::GenerateFeatureID() {
 }
 
 void DataBase::create(
-    std::string db_name,
+    std::string const &db_name,
     int32_t feature_dim,
-    std::string search_device = "gpu",
-    std::string feature_version = "v1",
+    std::string const &search_device = "gpu",
+    std::string const &feature_version = "v1",
     int32_t search_type = 0,
-    std::string similarity_type = "L2") {
+    std::string const &similarity_type = "L2") {
     // =====================
 
     if (this->is_build == 1)
@@ -146,10 +144,13 @@ void DataBase::create(
     save_db_.put("meta:feature_version", this->feature_version);
     save_db_.put("meta:search_type", this->search_type);
     save_db_.put("meta:similarity_type", this->similarity_type);
+    save_db_.put("person_id_accumulator", 0);
 
     this->faiss_index_.init(feature_dim, similarity_type);
 
     this->is_build = 1;
+    PRINT_INFO("[Create Database] name=%s,feature_dimension=%d,search_device=%s,feature_version=%s,search_type=%d,similarity_type=%s\n",
+               this->db_name.c_str(), this->feature_dim, this->search_device.c_str(), this->feature_version.c_str(), this->search_type, this->similarity_type.c_str());
 }
 
 void DataBase::clear() {
@@ -168,37 +169,7 @@ void DataBase::clear() {
     }
 }
 
-// void DataBase::remove(std::string &cid) {
-//     std::lock_guard<std::mutex> lock(this->g_mutex);
-//     if (this->clusters.has(cid)) {
-//         std::vector<std::string> fids = this->clusters.query(cid);
-//         for (uint64_t i = 0; i < fids.size(); ++i) {
-//             // this->remove(cid, fids[i]);
-//             int64_t id = this->clusters.query(cid, fids[i]);
-//             this->clusters.erase(cid, fids[i]);
-//             this->faiss_index_.erase(id);
-//             std::string key = cid + DELIMITER + fids[i];
-//             save_db_.erase(key);
-//         }
-//     } else {
-//         ThrowError("remove fail ! no such cid in db !");
-//     }
-// }
-
-// void DataBase::remove(std::string &cid, std::string &fid) {
-//     std::lock_guard<std::mutex> lock(this->g_mutex);
-//     if (this->clusters.has(cid, fid)) {
-//         int64_t id = this->clusters.query(cid, fid);
-//         this->clusters.erase(cid, fid);
-//         this->faiss_index_.erase(id);
-//         std::string key = cid + DELIMITER + fid;
-//         save_db_.erase(key);
-//     } else {
-//         ThrowError("remove fail ! no (cid, fid) in db !");
-//     }
-// }
-
-int32_t DataBase::batch_add(std::vector<std::string> const &cids, std::vector<std::string> const &fids, std::vector<std::string> const &b64_features) {
+int32_t DataBase::batch_add_vector(std::vector<std::string> const &cids, std::vector<std::string> const &fids, std::vector<std::string> const &b64_features) {
     std::lock_guard<std::mutex> lock(this->g_mutex);
     ThrowErrorIf(this->is_build == 0, "should create a data base first");
     int32_t ret{0};
@@ -212,39 +183,43 @@ int32_t DataBase::batch_add(std::vector<std::string> const &cids, std::vector<st
 
         if (!this->clusters.has(cids[i], fids[i])) {
             // cid and fid no exist, add a new one
-            this->clusters.add(cids[i], fids[i]);
+            int64_t person_id_accumulator{-1};
+            search("person_id_accumulator", person_id_accumulator);
+            assert(person_id_accumulator != -1);
+            this->clusters.add(cids[i], fids[i], person_id_accumulator);
             int64_t id = this->clusters.query(cids[i], fids[i]);
             add_features.insert(add_features.end(), feature.begin(), feature.end());
             add_ids.emplace_back(id);
+            update("person_id_accumulator", ++person_id_accumulator);
         } else {
             // if cid and fid exist, nothings to do
         }
     }
     ret = this->faiss_index_.batch_add_with_ids(add_features, add_ids.size(), add_ids);
     if (ret < 0) {
-        PRINT_ERROR("DataBase::batch_add batch_add_with_ids failed, ret=%d\n", ret);
+        PRINT_ERROR("DataBase::batch_add_vector batch_add_with_ids failed, ret=%d\n", ret);
         return -1;
     }
     return 0;
 }
 
-int32_t DataBase::batch_add_and_save(std::vector<std::string> const &cids, std::vector<std::string> const &fids, std::vector<std::string> const &b64_features) {
+int32_t DataBase::batch_add_vector_and_save(std::vector<std::string> const &cids, std::vector<std::string> const &fids, std::vector<std::string> const &b64_features) {
     assert(cids.size() == fids.size());
     assert(cids.size() == b64_features.size());
     int32_t ret{0};
-    ret = batch_add(cids, fids, b64_features);
+    ret = batch_add_vector(cids, fids, b64_features);
     if (ret < 0) {
-        PRINT_ERROR("DataBase::batch_add_and_save batch_add failed, ret=%d\n", ret);
+        PRINT_ERROR("DataBase::batch_add_vector_and_save batch_add_vector failed, ret=%d\n", ret);
         return -1;
     }
     for (size_t i = 0; i < b64_features.size(); i++) {
         std::string key = cids[i] + DELIMITER + fids[i];
-        save_db_.put(key, b64_features[i]); // TODO: batch put
+        put(key, b64_features[i]); // TODO: batch put
     }
     return 0;
 }
 
-std::vector<std::vector<Recall>> DataBase::batch_search(std::vector<std::string> const &b64_features, int32_t topk) {
+std::vector<std::vector<Recall>> DataBase::batch_search_vector(std::vector<std::string> const &b64_features, int32_t topk) {
     std::lock_guard<std::mutex> lock(this->g_mutex);
     ThrowErrorIf(this->is_build == 0, "should create a data base first");
     std::vector<float> features;
@@ -258,7 +233,7 @@ std::vector<std::vector<Recall>> DataBase::batch_search(std::vector<std::string>
     int64_t *recall_idx = new int64_t[query_num * topk];
     float *recall_distance = new float[query_num * topk];
 
-    this->faiss_index_.batch_search(features, query_num, topk, recall_distance, recall_idx);
+    this->faiss_index_.batch_search_vector(features, query_num, topk, recall_distance, recall_idx);
 
     std::vector<std::vector<Recall>> all_recalls;
     for (int64_t i = 0; i < query_num; i++) {
@@ -283,7 +258,7 @@ std::vector<std::vector<Recall>> DataBase::batch_search(std::vector<std::string>
     return all_recalls;
 }
 
-int32_t DataBase::restore(std::string &db_name) {
+int32_t DataBase::restore(std::string const &db_name) {
     std::lock_guard<std::mutex> lock(this->g_mutex);
     int32_t ret{0};
     std::string save_path = cfg_.save_path + "/" + db_name;
@@ -301,7 +276,7 @@ int32_t DataBase::restore(std::string &db_name) {
     for (it->SeekToFirst(); it->Valid(); it->Next()) {
         std::string key = it->key().ToString();
         // only process non meta key
-        if (key.find("meta:") == std::string::npos) {
+        if (key.find("meta:") == std::string::npos && key != "person_id_accumulator") {
             std::string b64_feature;
             save_db_.get(key, b64_feature);
             std::vector<std::string> cfid;
@@ -311,12 +286,45 @@ int32_t DataBase::restore(std::string &db_name) {
             b64_features.emplace_back(b64_feature);
         }
     }
-    ret = batch_add(cids, fids, b64_features);
+    ret = batch_add_vector(cids, fids, b64_features);
     if (ret < 0) {
-        PRINT_ERROR("DataBase::restore batch_add failed, ret=%d\n", ret);
+        PRINT_ERROR("DataBase::restore batch_add_vector failed, ret=%d\n", ret);
         return -1;
     }
+
+    PRINT_INFO("[Restore Database] name=%s,feature_dimension=%d,search_device=%s,feature_version=%s,search_type=%d,similarity_type=%s\n",
+               this->db_name.c_str(), this->feature_dim, this->search_device.c_str(), this->feature_version.c_str(), this->search_type, this->similarity_type.c_str());
     return 0;
+}
+
+void DataBase::put(std::string const &key, std::string const &value) {
+    save_db_.put(key, value);
+}
+
+void DataBase::put(std::string const &key, int64_t value) {
+    save_db_.put(key, value);
+}
+
+void DataBase::search(std::string const &key, int64_t &value) {
+    save_db_.get(key, value);
+}
+
+void DataBase::erase(std::string const &key) {
+    save_db_.erase(key);
+}
+
+void DataBase::update(std::string const &key, int64_t value) {
+    erase(key);
+    put(key, value);
+}
+
+int64_t DataBase::query(std::string const &cid, std::string const &fid) {
+    // TODO: clusters must be as a LRU Cache(not at all in memory, because the memory is finite) for person id,
+    // or use rocksdb store the cfid==>id mapping
+    if (clusters.has(cid, fid) == true) {
+        return clusters.query(cid, fid);
+    }
+    return -1;
 }
 
 DataBase *DataBases::at(std::string const &db_name) {
@@ -339,12 +347,12 @@ bool DataBases::has(std::string const &db_name) {
 }
 
 void DataBases::create(
-    std::string db_name,
+    std::string const &db_name,
     int32_t feature_dim,
-    std::string search_device = "gpu",
-    std::string feature_version = "v1",
+    std::string const &search_device = "gpu",
+    std::string const &feature_version = "v1",
     int32_t search_type = 0,
-    std::string similarity_type = "L2") {
+    std::string const &similarity_type = "L2") {
     ///=====================
     std::lock_guard<std::mutex> lock(this->g_mutex);
 
@@ -364,7 +372,7 @@ void DataBases::create(
     }
 }
 
-void DataBases::restore(std::string db_name) {
+void DataBases::restore(std::string const &db_name) {
     if (!this->has(db_name)) {
         DataBase *db = new DataBase;
         db->SetCfg(cfg_);
@@ -375,7 +383,7 @@ void DataBases::restore(std::string db_name) {
     }
 }
 
-void DataBases::purge(std::string &db_name) {
+void DataBases::purge(std::string const &db_name) {
     std::lock_guard<std::mutex> lock(this->g_mutex);
     if (this->has(db_name)) {
         auto &db = this->dbs.at(db_name);
@@ -413,6 +421,7 @@ int32_t InitDB(Config const &cfg) {
         }
         }
     }
+    // here add more database init
     return 0;
 }
 

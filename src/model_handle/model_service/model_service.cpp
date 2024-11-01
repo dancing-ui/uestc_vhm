@@ -42,7 +42,11 @@ int32_t PersonReidService::Init(ModelCfgItem const &cfg) {
         PRINT_ERROR("create person_reid_ctx_ failed\n");
         return -1;
     }
-    person_reid_ctx_->SetCfg(cfg.person_reid_param);
+    ret = person_reid_ctx_->Init(cfg.person_reid_param);
+    if (ret < 0) {
+        PRINT_ERROR("init person_reid_ctx_ failed, ret=%d\n", ret);
+        return -2;
+    }
     return 0;
 }
 

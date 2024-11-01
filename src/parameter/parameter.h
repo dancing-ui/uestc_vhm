@@ -93,7 +93,7 @@ struct DataBaseParameter {
 };
 struct PersonReidParameter {
     NetworkInfo network_info;
-    int32_t top_k{1};
+    int32_t top_k{1000};
     float reid_threshold;
     DataBaseParameter database_param_;
 };
