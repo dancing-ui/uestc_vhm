@@ -49,16 +49,22 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && make -j$(nproc) \
     && make install \
     && update-alternatives --install /usr/bin/cmake cmake /usr/local/bin/cmake 100 --force
+# install rocksdb
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends libsnappy-dev zlib1g-dev libbz2-dev liblz4-dev libzstd-dev libgflags-dev \
+    && git clone https://github.com/facebook/rocksdb.git \
+    && cd "$(pwd)/rocksdb" \
+    && make -j$(nproc) shared_lib \
+    && make PREFIX="/usr/local/rocksdb" install-shared \
+    && echo "export LD_LIBRARY_PATH=\"/usr/local/rocksdb/lib:$LD_LIBRARY_PATH\"" >> ~/.zshrc
 # install faiss
-RUN git clone https://github.com/xianyi/OpenBLAS.git \
-    && cd "$(pwd)/OpenBLAS" \
-    && make -j$(nproc) \
-    && make PREFIX="/usr/local/openblas" install \
-    && echo "export LD_LIBRARY_PATH=\"/usr/local/openblas/lib:$LD_LIBRARY_PATH\"" >> ~/.zshrc \
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends libopenblas-dev \
     && git clone https://github.com/facebookresearch/faiss.git \
     && cd "$(pwd)/faiss" \
+    && git checkout v1.9.0 \
     && cmake -S . -B build \
-    -DFAISS_ENABLE_GPU=OFF \
+    -DFAISS_ENABLE_GPU=ON \
     -DFAISS_ENABLE_PYTHON=OFF \
     -DFAISS_ENABLE_RAFT=OFF \
     -DBUILD_TESTING=OFF \
@@ -67,11 +73,22 @@ RUN git clone https://github.com/xianyi/OpenBLAS.git \
     -DCMAKE_BUILD_TYPE=Release \
     -DFAISS_USE_LTO=OFF \
     -DFAISS_ENABLE_ROCM=OFF \
-    -DCMAKE_INSTALL_PREFIX=/usr/local/faiss \
+    -DCUDAToolkit_ROOT=/usr/local/cuda \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/faiss_gpu \
     && make -C build -j$(nproc) faiss \    
     && make -C build install \
-    && echo "export LD_LIBRARY_PATH=\"/usr/local/faiss/lib:$LD_LIBRARY_PATH\"" >> ~/.zshrc
-
+    && echo "export LD_LIBRARY_PATH=\"/usr/local/faiss_gpu/lib:$LD_LIBRARY_PATH\"" >> ~/.zshrc
+# install libhv
+RUN git clone https://github.com/ithewei/libhv.git \
+    && cd "$(pwd)/libhv" \
+    && cmake -S . -B build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr/local/libhv \
+    -DBUILD_SHARED=ON \
+    -DBUILD_STATIC=OFF \
+    && make -C build -j$(nproc) \
+    && make -C build install \
+    && echo "export LD_LIBRARY_PATH=\"/usr/local/libhv/lib:$LD_LIBRARY_PATH\"" >> ~/.zshrc
 # install dependencies
 RUN apt-get dist-upgrade -y && \
     apt-get install -y \

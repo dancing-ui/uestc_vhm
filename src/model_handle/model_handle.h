@@ -23,6 +23,7 @@ public:
 private:
     std::unique_ptr<ModelManager> model_manager_;
     std::unique_ptr<ObjectTrackService> object_track_service_;
+    std::unique_ptr<PersonReidService> person_reid_service_;
     WorkMode work_mode_;
     ModelHandleRes model_handle_res_;
 };

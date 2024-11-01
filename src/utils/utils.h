@@ -126,23 +126,7 @@ struct AffineMat {
     float v3, v4, v5;
 };
 
-void saveBinaryFile(float *vec, size_t len, const std::string &file);
-
-std::vector<uint8_t> readBinaryFile(const std::string &file);
-
 std::vector<unsigned char> loadModel(const std::string &file);
-
-std::string getSystemTimeStr();
-
-void setRenderWindow(InitParameter &param);
-
-std::string getTimeStamp();
-
-void show(const std::vector<std::vector<Box>> &objectss, const std::vector<std::string> &classNames,
-          const int &cvDelayTime, std::vector<cv::Mat> &imgsBatch);
-
-void save(const std::vector<std::vector<Box>> &objectss, const std::vector<std::string> &classNames,
-          const std::string &savePath, std::vector<cv::Mat> &imgsBatch, const int &batchSize, const int &batchi);
 
 class HostTimer {
 public:
@@ -168,6 +152,11 @@ public:
 private:
     cudaEvent_t start, end;
 };
+
+extern bool CheckFloatEqual(float f_x, float f_y);
+extern int64_t StrToInt64(std::string const &str);
+extern std::string Int64ToStr(int64_t int64_x);
+extern std::string LocalTime();
 
 } // utils
 

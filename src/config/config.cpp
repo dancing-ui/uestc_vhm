@@ -216,9 +216,8 @@ int32_t Config::Parse() {
     }
     PRINT_INFO("begin to parse object track config\n");
     if (json_obj.contains("object_track")) {
-        auto item = json_obj["object_track"];
-        if (item.contains("enbaled_strategy_name")) {
-            model_cfg_item_.object_track_param.enbaled_strategy_name = item["enbaled_strategy_name"].get<std::string>();
+        if (json_obj["object_track"].contains("enbaled_strategy_name")) {
+            model_cfg_item_.object_track_param.enbaled_strategy_name = json_obj["object_track"]["enbaled_strategy_name"].get<std::string>();
         } else {
             PRINT_ERROR("'enbaled_strategy_name' key not found\n");
             return -1;
@@ -256,7 +255,100 @@ int32_t Config::Parse() {
             }
         }
     }
+    PRINT_INFO("begin to parse person reid config\n");
+    if (json_obj.contains("person_reid")) {
+        if (json_obj["person_reid"].contains("network_info")) {
+            auto item = json_obj["person_reid"]["network_info"];
 
+            if (item.contains("enable")) {
+                model_cfg_item_.person_reid_param.network_info.is_enable = item["enable"].get<bool>();
+            } else {
+                PRINT_ERROR("'enable' key not found\n");
+                return -1;
+            }
+
+            if (item.contains("ip")) {
+                model_cfg_item_.person_reid_param.network_info.ip = item["ip"];
+            } else {
+                PRINT_ERROR("'ip' key not found\n");
+                return -1;
+            }
+
+            if (item.contains("port")) {
+                model_cfg_item_.person_reid_param.network_info.port = item["port"].get<uint16_t>();
+            } else {
+                PRINT_ERROR("'port' key not found\n");
+                return -1;
+            }
+
+            if (item.contains("protocol")) {
+                model_cfg_item_.person_reid_param.network_info.protocol = item["protocol"];
+            } else {
+                PRINT_ERROR("'protocol' key not found\n");
+                return -1;
+            }
+
+            if (item.contains("request_url")) {
+                model_cfg_item_.person_reid_param.network_info.request_url = item["request_url"];
+            } else {
+                PRINT_ERROR("'request_url' key not found\n");
+                return -1;
+            }
+
+            if (item.contains("keep_alive")) {
+                model_cfg_item_.person_reid_param.network_info.keep_alive = item["keep_alive"].get<bool>();
+            } else {
+                PRINT_ERROR("'keep_alive' key not found\n");
+                return -1;
+            }
+
+            if (json_obj["person_reid"].contains("database")) {
+                auto item2 = json_obj["person_reid"]["database"];
+
+                if (item2.contains("enable")) {
+                    model_cfg_item_.person_reid_param.database_param_.is_enable = item2["enable"].get<bool>();
+                } else {
+                    PRINT_ERROR("'enable' key not found\n");
+                    return -1;
+                }
+
+                if (item2.contains("save_path")) {
+                    model_cfg_item_.person_reid_param.database_param_.save_path = item2["save_path"];
+                } else {
+                    PRINT_ERROR("'save_path' key not found\n");
+                    return -1;
+                }
+
+                if (item2.contains("db_name")) {
+                    model_cfg_item_.person_reid_param.database_param_.db_name = item2["db_name"];
+                } else {
+                    PRINT_ERROR("'db_name' key not found\n");
+                    return -1;
+                }
+
+                if (item2.contains("op_type")) {
+                    model_cfg_item_.person_reid_param.database_param_.op_type = DBOperateType::_from_string(item2["op_type"].get<std::string>().c_str());
+                } else {
+                    PRINT_ERROR("'op_type' key not found\n");
+                    return -1;
+                }
+
+                if (item2.contains("feature_dim")) {
+                    model_cfg_item_.person_reid_param.database_param_.feature_dim = item2["feature_dim"].get<int32_t>();
+                } else {
+                    PRINT_ERROR("'feature_dim' key not found\n");
+                    return -1;
+                }
+
+                if (item2.contains("dist_thresh")) {
+                    model_cfg_item_.person_reid_param.database_param_.dist_thresh = item2["dist_thresh"].get<float>();
+                } else {
+                    PRINT_ERROR("'dist_thresh' key not found\n");
+                    return -1;
+                }
+            }
+        }
+    }
     model_cfg_item_.work_mode = opt_.work_mode;
     return 0;
 }

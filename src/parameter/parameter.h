@@ -2,6 +2,7 @@
 #define _UESTC_VHM_PARAMETER_H_
 
 #include "common_include.h"
+#include "enum/enum.h"
 
 namespace ns_uestc_vhm {
 
@@ -71,6 +72,32 @@ enum class WorkMode {
     kPersonReid = 2,
 };
 
+struct NetworkInfo {
+    bool is_enable;
+    std::string ip;
+    uint16_t port;
+    std::string protocol;
+    std::string request_url;
+    bool keep_alive;
+};
+
+BETTER_ENUM(DBOperateType, int, kNone = 0, kCreate, kRestore)
+
+struct DataBaseParameter {
+    bool is_enable;
+    std::string save_path;
+    std::string db_name;
+    DBOperateType op_type{DBOperateType::kNone};
+    int32_t feature_dim;
+    float dist_thresh;
+};
+struct PersonReidParameter {
+    NetworkInfo network_info;
+    int32_t top_k{1};
+    float reid_threshold;
+    DataBaseParameter database_param_;
+};
+
 struct ModelCfgItem {
     // yolo
     InitParameter param;
@@ -78,6 +105,8 @@ struct ModelCfgItem {
     ReidParameter reid_param;
     // object track
     ObjectTrackParameter object_track_param;
+    // person reid
+    PersonReidParameter person_reid_param;
     // work mode
     WorkMode work_mode{WorkMode::kNoneMode};
 };

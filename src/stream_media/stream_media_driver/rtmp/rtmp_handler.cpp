@@ -155,7 +155,38 @@ int32_t RtmpHandler::HandleDataOutput(ModelHandleRes const &model_handle_res) {
         break;
     }
     case WorkMode::kPersonReid: {
-        // TODO: add person reid
+        cv::Scalar color = cv::Scalar(0, 255, 0);
+        cv::Point bbox_points[1][4];
+        for (size_t bi = 0; bi < model_handle_res.person_reid_res.imgs_batch.size(); bi++) {
+            if (!model_handle_res.person_reid_res.track_res.empty()) {
+                for (auto &box : model_handle_res.person_reid_res.track_res[bi]) {
+                    if (model_cfg_.param.num_class == 91) {
+                        color = utils::Colors::color91[box.classes];
+                    } else if (model_cfg_.param.num_class == 80) {
+                        color = utils::Colors::color80[box.classes];
+                    } else if (model_cfg_.param.num_class == 20) {
+                        color = utils::Colors::color80[box.classes];
+                    }
+                    float left = box.x;
+                    float top = box.y;
+                    cv::rectangle(model_handle_res.person_reid_res.imgs_batch[bi], cv::Point(left, top), cv::Point(left + box.w, top + box.h), color, 2, cv::LINE_AA);
+                    cv::String det_info = std::to_string(box.object_id);
+                    bbox_points[0][0] = cv::Point(left, top);
+                    bbox_points[0][1] = cv::Point(left + det_info.size() * 11, top);
+                    bbox_points[0][2] = cv::Point(left + det_info.size() * 11, top - 15);
+                    bbox_points[0][3] = cv::Point(left, top - 15);
+                    std::vector<std::vector<cv::Point>> pts;
+                    pts.push_back(std::vector<cv::Point>(bbox_points[0], bbox_points[0] + 4));
+                    cv::fillPoly(model_handle_res.person_reid_res.imgs_batch[bi], pts, color);
+                    cv::putText(model_handle_res.person_reid_res.imgs_batch[bi], det_info, bbox_points[0][0], cv::FONT_HERSHEY_DUPLEX, 0.6, cv::Scalar(255, 255, 255), 1, cv::LINE_AA);
+                }
+            }
+            ret = PushOneFrame(model_handle_res.person_reid_res.imgs_batch[bi]);
+            if (ret < 0) {
+                PRINT_ERROR("push one frame failed, ret=%d, stream_id=%d\n", ret, stream_media_cfg_.id);
+                return -1;
+            }
+        }
         break;
     }
     case WorkMode::kNoneMode: {

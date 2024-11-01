@@ -39,7 +39,7 @@ int32_t ObjectTrackCtx::Track(std::vector<cv::Mat> const &imgs_batch, std::vecto
     return 0;
 }
 
-std::vector<std::vector<TrackerRes>> ObjectTrackCtx::GetTrackBoxesLists() {
+std::vector<std::vector<TrackerRes>> ObjectTrackCtx::GetTrackBoxesLists() const {
     return track_boxes_lists_;
 }
 

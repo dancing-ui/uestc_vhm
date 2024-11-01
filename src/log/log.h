@@ -4,7 +4,6 @@
 #include <cstdio>
 #include <string>
 #include <time.h>
-#include <thread>
 
 namespace ns_uestc_vhm {
 
@@ -63,6 +62,12 @@ static std::string GetSystemTime(std::string const &format) {
         fprintf(stdout, "%s[UESTC_VHM][FATAL] " fmt, time_str.c_str(), ##__VA_ARGS__); \
     } while (0)
 #endif // PRINT_FATAL
+
+#define ThrowError(msg) throw std::runtime_error(msg)
+#define ThrowErrorIf(cond, msg) \
+    if (cond) throw std::runtime_error(msg)
+#define VarName(x) #x
+#define IsSameType(t, x) std::is_same<t, x>::value
 
 } // ns_uestc_vhm
 

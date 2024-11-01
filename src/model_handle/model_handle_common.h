@@ -19,12 +19,12 @@ struct DetectRes : ClassRes {
 };
 
 struct TrackerRes : public DetectRes {
-    TrackerRes(int cl, float pb, float xc, float yc, float wc, float hc, int id) :
+    TrackerRes(int cl, float pb, float xc, float yc, float wc, float hc, int64_t id) :
         DetectRes() {
         classes = cl, prob = pb, x = xc, y = yc, w = wc, h = hc, object_id = id;
     }
     cv::Mat feature;
-    int object_id;
+    int64_t object_id;
 };
 
 struct ObjectTrackRes {
@@ -34,6 +34,7 @@ struct ObjectTrackRes {
 
 struct ModelHandleRes {
     ObjectTrackRes object_track_res;
+    ObjectTrackRes person_reid_res;
 };
 
 using ModelHandleCb = std::function<int32_t(ModelHandleRes const &)>;

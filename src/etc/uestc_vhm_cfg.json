@@ -5,8 +5,18 @@
             "enable": true,
             "type": "rtmp",
             "name": "unknown",
-            "in": "rtmp://172.17.0.4/camera/camera_stream",
-            "out": "rtmp://172.17.0.4/object_track/object_track_stream",
+            "in": "rtmp://172.17.0.3/camera/camera_stream",
+            "out": "rtmp://172.17.0.3/object_track/object_track_stream",
+            "dst_width": 1920,
+            "dst_height": 1080
+        },
+        {
+            "id": 2,
+            "enable": false,
+            "type": "rtmp",
+            "name": "unknown",
+            "in": "rtmp://172.17.0.3/camera/camera_stream",
+            "out": "rtmp://172.17.0.3/object_track/object_track_stream_2",
             "dst_width": 1920,
             "dst_height": 1080
         }
@@ -45,5 +55,23 @@
             "agnostic": false
         },
         "bytetrack": {}
+    },
+    "person_reid": {
+        "network_info": {
+            "enable": true,
+            "ip": "127.0.0.1",
+            "port": 8080,
+            "protocol": "http",
+            "request_url": "person_reid",
+            "keep_alive": true
+        },
+        "database": {
+            "enable": true,
+            "save_path": "/workspace/database/",
+            "db_name": "person_reid",
+            "op_type": "kCreate",
+            "feature_dim": 2048,
+            "dist_thresh": 0.05
+        }
     }
 }

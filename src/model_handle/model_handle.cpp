@@ -1,5 +1,7 @@
 #include "model_handle.h"
 #include "log.h"
+#include "model_service.h"
+#include <chrono>
 
 namespace ns_uestc_vhm {
 
@@ -34,7 +36,16 @@ int32_t ModelHandle::Init(ModelCfgItem const &cfg) {
         break;
     }
     case WorkMode::kPersonReid: {
-        // TODO: add person reid
+        person_reid_service_ = std::make_unique<PersonReidService>();
+        if (person_reid_service_.get() == nullptr) {
+            PRINT_ERROR("create person_reid_service_ failed\n");
+            return -5;
+        }
+        ret = person_reid_service_->Init(cfg);
+        if (ret < 0) {
+            PRINT_ERROR("init person_reid_service_ failed, ret=%d\n", ret);
+            return -6;
+        }
         break;
     }
     case WorkMode::kNoneMode: {
@@ -51,28 +62,39 @@ int32_t ModelHandle::RawDataInput(std::vector<cv::Mat> &imgs_batch, ModelHandleC
         PRINT_ERROR("model_manager_ is nullptr\n");
         return -1;
     }
+    auto start = std::chrono::steady_clock::now();
+    ret = model_manager_->ObjectDetectInput(imgs_batch);
+    auto end = std::chrono::steady_clock::now();
+    PRINT_INFO("object detect wasted time: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+    if (ret < 0) {
+        PRINT_ERROR("model_manager_ ObjectDetectInput failed, ret=%d\n", ret);
+        return -2;
+    }
+
+    auto detect_boxes = model_manager_->GetDetectBoxes();
+    start = std::chrono::steady_clock::now();
+    ret = model_manager_->FeatureExtractInput(imgs_batch, detect_boxes);
+    end = std::chrono::steady_clock::now();
+    PRINT_INFO("feature extract wasted time: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+    if (ret < 0) {
+        PRINT_ERROR("model_manager_ FeatureExtractInput failed, ret=%d\n", ret);
+        return -3;
+    }
+    auto feats_lists = model_manager_->GetFeatsLists();
+
     switch (work_mode_) {
     case WorkMode::kObjectTrack: {
-        ret = model_manager_->ObjectDetectInput(imgs_batch);
-        if (ret < 0) {
-            PRINT_ERROR("model_manager_ ObjectDetectInput failed, ret=%d\n", ret);
-            return -3;
-        }
-        auto detect_boxes = model_manager_->GetDetectBoxes();
-        ret = model_manager_->FeatureExtractInput(imgs_batch, detect_boxes);
-        if (ret < 0) {
-            PRINT_ERROR("model_manager_ FeatureExtractInput failed, ret=%d\n", ret);
-            return -4;
-        }
-        auto feats_lists = model_manager_->GetFeatsLists();
         if (object_track_service_.get() == nullptr) {
             PRINT_ERROR("object_track_service_ is nullptr\n");
-            return -3;
+            return -4;
         }
+        start = std::chrono::steady_clock::now();
         ret = object_track_service_->Track(imgs_batch, detect_boxes, feats_lists);
+        end = std::chrono::steady_clock::now();
+        PRINT_INFO("track wasted time: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
         if (ret < 0) {
             PRINT_ERROR("object_track_ctx_ track failed, ret=%d\n", ret);
-            return -4;
+            return -5;
         }
         model_handle_res_.object_track_res.imgs_batch = imgs_batch;
         model_handle_res_.object_track_res.track_res = object_track_service_->GetTrackBoxesLists();
@@ -80,7 +102,21 @@ int32_t ModelHandle::RawDataInput(std::vector<cv::Mat> &imgs_batch, ModelHandleC
         break;
     }
     case WorkMode::kPersonReid: {
-        // TODO: add person reid
+        if (person_reid_service_.get() == nullptr) {
+            PRINT_ERROR("person_reid_service_ is nullptr\n");
+            return -6;
+        }
+        start = std::chrono::steady_clock::now();
+        ret = person_reid_service_->Reid(imgs_batch, detect_boxes, feats_lists);
+        end = std::chrono::steady_clock::now();
+        PRINT_INFO("reid wasted time: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+        if (ret < 0) {
+            PRINT_ERROR("person_reid_service_ reid failed, ret=%d\n", ret);
+            return -7;
+        }
+        model_handle_res_.person_reid_res.imgs_batch = imgs_batch;
+        model_handle_res_.person_reid_res.track_res = person_reid_service_->GetReidBoxesLists();
+        model_manager_->Reset(); // important
         break;
     }
     case WorkMode::kNoneMode: {
@@ -92,7 +128,7 @@ int32_t ModelHandle::RawDataInput(std::vector<cv::Mat> &imgs_batch, ModelHandleC
     if (handle_cb != nullptr) {
         ret = handle_cb(model_handle_res_);
         if (ret < 0) {
-            return -5;
+            return -8;
         }
     }
     return 0;

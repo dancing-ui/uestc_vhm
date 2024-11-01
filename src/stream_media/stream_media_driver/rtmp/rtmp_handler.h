@@ -43,7 +43,7 @@ private:
     StreamMediaCfgItem stream_media_cfg_;
     ModelCfgItem model_cfg_;
 
-    std::unique_ptr<ModelHandle> model_handler_;
+    std::unique_ptr<ModelHandle> model_handler_; // TODO：move model to stream media driver class for reuse
     FILE *fp_{nullptr};
 
     ModelHandleCb model_handle_cb_;

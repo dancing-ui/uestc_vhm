@@ -1,7 +1,7 @@
 # uestc_vhm
 <div align="center">
 
-  [![Cuda](https://img.shields.io/badge/CUDA-11.3-%2376B900?logo=nvidia)](https://developer.nvidia.com/cuda-toolkit-archive)
+  [![Cuda](https://img.shields.io/badge/CUDA-11.8-%2376B900?logo=nvidia)](https://developer.nvidia.com/cuda-toolkit-archive)
   [![](https://img.shields.io/badge/TensorRT-8.6.1.6-%2376B900.svg?style=flat&logo=tensorrt)](https://developer.nvidia.com/nvidia-tensorrt-8x-download)
   [![](https://img.shields.io/badge/windows-11-blue.svg?style=flat&logo=windows)](https://www.microsoft.com/)
   [![](https://img.shields.io/badge/ubuntu-22.04-orange.svg?style=flat&logo=ubuntu)](https://releases.ubuntu.com/22.04/)
@@ -25,6 +25,7 @@
 - 目标检测：支持Yolov8n模型实现目标检测。
 - 目标跟踪：支持DeepSORT算法实现目标跟踪，后续考虑添加ByteTrack算法。
 ## 行人重识别服务
+![alt text](doc/image/person_reid_service.png)
 检测到行人之后
 - 首先在数据库里检索是否有相似度比较高的人
   - 这一步需要用向量数据库来做，若出现，则给出对应的id，否则id为无效值
@@ -32,7 +33,7 @@
   ```json
   {
     "PersonId": 1 // 行人id
-    "Picture": "xxx"// base64码后的行人图片
+    "Picture": "xxx"// base64编码后的行人图片
     "CameraIP": "192.169.0.0" //摄像头地址
     "TimeStamp": "xxx"//时间戳
   }
@@ -111,7 +112,7 @@ cd ../../bin
 </div>
 
 ## 模型配置
-- 本项目所使用模型均通过官方仓库本地编译得来，且由于本项目使用了git lfs来管理模型文件、视频文件和第三方库文件，因此初期阶段（若更换TensorRT版本，需要重新生成模型，[模型生成教程](model_file/how_to_generate_model.md)）无需在其他地方下载模型文件和测试视频，用仓库中现成的就行。
+- 本项目所使用模型均通过官方仓库本地编译得来，且由于本项目使用了git lfs来管理模型文件、视频文件和第三方库文件，因此初期阶段（若更换TensorRT版本，需要重新生成模型，[模型生成及动态库编译安装教程](model_file/how_to_generate_model.md)）无需在其他地方下载模型文件和测试视频，用仓库中现成的就行。
   - 模型文件存放在model_file目录下，视频文件在test_video目录下。
 - 可以通过修改src/etc/uestc_vhm_cfg.json配置文件的路径来自定义配置（流媒体配置、模型配置）。
 ## 第三方库编译

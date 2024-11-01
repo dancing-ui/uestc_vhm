@@ -1,8 +1,6 @@
 #ifndef _UESTC_VHM_CONFIG_H_
 #define _UESTC_VHM_CONFIG_H_
 
-#include <string>
-#include <fstream>
 #include <vector>
 
 #include "parameter.h"

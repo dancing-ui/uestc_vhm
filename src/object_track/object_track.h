@@ -40,7 +40,7 @@ public:
     void SetStrategy(std::shared_ptr<ObjectTrackStrategy> strategy);
 
     int32_t Track(std::vector<cv::Mat> const &imgs_batch, std::vector<std::vector<utils::Box>> const &detect_boxes, std::vector<std::vector<cv::Mat>> const &feats_lists);
-    std::vector<std::vector<TrackerRes>> GetTrackBoxesLists();
+    std::vector<std::vector<TrackerRes>> GetTrackBoxesLists() const;
 
 public:
     std::shared_ptr<ObjectTrackStrategy> strategy_;

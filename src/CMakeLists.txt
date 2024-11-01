@@ -5,6 +5,9 @@ set(SRC_DIR
     3rd_party/fast_reid/include
     common 
     config
+    database
+    database/faiss
+    database/rocksdb
     hardware_accelerator/cuda/decode/yolov8
     hardware_accelerator/cuda/kernel_function
     log
@@ -17,6 +20,7 @@ set(SRC_DIR
     object_track
     object_track/deepsort
     parameter
+    person_reid
     stream_media
     stream_media/stream_media_manager
     stream_media/stream_media_driver
@@ -48,9 +52,15 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 list(APPEND DEPEND_LIB_LIST ${CUDA_ALL_LIBS} ${OpenCV_LIBRARIES})
 
 list(APPEND DEPEND_LIB_LIST ${CMAKE_CURRENT_SOURCE_DIR}/3rd_party/fast_reid/lib/libFastRTEngine.so)
-
-include_directories(/usr/local/faiss/include)
-list(APPEND DEPEND_LIB_LIST /usr/local/faiss/lib/libfaiss.so)
+# find faiss
+include_directories(/usr/local/faiss_gpu/include)
+list(APPEND DEPEND_LIB_LIST /usr/local/faiss_gpu/lib/libfaiss.so)
+# find rocksdb
+include_directories(/usr/local/rocksdb/include)
+list(APPEND DEPEND_LIB_LIST /usr/local/rocksdb/lib/librocksdb.so)
+# find libhv
+include_directories(/usr/local/libhv/include)
+list(APPEND DEPEND_LIB_LIST /usr/local/libhv/lib/libhv.so)
 
 message(STATUS "DEPEND_LIB_LIST: ${DEPEND_LIB_LIST}")
 

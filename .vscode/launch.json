@@ -8,7 +8,7 @@
             "program": "${workspaceFolder}/build/src/uestc_vhm",
             "args": [
                 "--config=/workspace/src/etc/uestc_vhm_cfg.json",
-                "--mode=object_track"
+                "--mode=person_reid"
             ],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "Build",
