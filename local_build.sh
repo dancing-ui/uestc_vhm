@@ -93,8 +93,7 @@ log_info "cppcheck end"
 # log_info "tidy end"
 
 # make
-cmake --build build \
--- -j $(nproc) \
+make -C build -j $(nproc) \
 > "/tmp/uestc_vhm_build.log" 2>&1
 ret=$?
 log_save_without_time "$(cat "/tmp/uestc_vhm_build.log")"

@@ -91,7 +91,7 @@ int32_t ModelHandle::RawDataInput(std::vector<cv::Mat> &imgs_batch, ModelHandleC
         start = std::chrono::steady_clock::now();
         ret = object_track_service_->Track(imgs_batch, detect_boxes, feats_lists);
         end = std::chrono::steady_clock::now();
-        PRINT_INFO("track wasted time: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+        PRINT_INFO("object track wasted time: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
         if (ret < 0) {
             PRINT_ERROR("object_track_ctx_ track failed, ret=%d\n", ret);
             return -5;
@@ -109,7 +109,7 @@ int32_t ModelHandle::RawDataInput(std::vector<cv::Mat> &imgs_batch, ModelHandleC
         start = std::chrono::steady_clock::now();
         ret = person_reid_service_->Reid(imgs_batch, detect_boxes, feats_lists);
         end = std::chrono::steady_clock::now();
-        PRINT_INFO("reid wasted time: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+        PRINT_INFO("person reid wasted time: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
         if (ret < 0) {
             PRINT_ERROR("person_reid_service_ reid failed, ret=%d\n", ret);
             return -7;
