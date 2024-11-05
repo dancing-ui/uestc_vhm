@@ -158,6 +158,30 @@ extern int64_t StrToInt64(std::string const &str);
 extern std::string Int64ToStr(int64_t int64_x);
 extern std::string LocalTime();
 
+#ifndef TIMERSTART
+#define TIMERSTART(tag) auto tag##_start = std::chrono::steady_clock::now(), tag##_end = tag##_start
+#endif
+
+#ifndef TIMEREND
+#define TIMEREND(tag) tag##_end = std::chrono::steady_clock::now()
+#endif
+
+#ifndef DURATION_s
+#define DURATION_s(tag) PRINT_INFO("%s costs %ld s\n", #tag, std::chrono::duration_cast<std::chrono::seconds>(tag##_end - tag##_start).count())
+#endif
+
+#ifndef DURATION_ms
+#define DURATION_ms(tag) PRINT_INFO("%s costs %ld ms\n", #tag, std::chrono::duration_cast<std::chrono::milliseconds>(tag##_end - tag##_start).count());
+#endif
+
+#ifndef DURATION_us
+#define DURATION_us(tag) PRINT_INFO("%s costs %ld us\n", #tag, std::chrono::duration_cast<std::chrono::microseconds>(tag##_end - tag##_start).count());
+#endif
+
+#ifndef DURATION_ns
+#define DURATION_ns(tag) PRINT_INFO("%s costs %ld ns\n", #tag, std::chrono::duration_cast<std::chrono::nanoseconds>(tag##_end - tag##_start).count());
+#endif
+
 } // utils
 
 } // ns_uestc_vhm

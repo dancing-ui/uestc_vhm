@@ -1,7 +1,7 @@
 #include "model_handle.h"
 #include "log.h"
 #include "model_service.h"
-#include <chrono>
+#include "utils.h"
 
 namespace ns_uestc_vhm {
 
@@ -62,20 +62,20 @@ int32_t ModelHandle::RawDataInput(std::vector<cv::Mat> &imgs_batch, ModelHandleC
         PRINT_ERROR("model_manager_ is nullptr\n");
         return -1;
     }
-    auto start = std::chrono::steady_clock::now();
+    TIMERSTART(object_detect);
     ret = model_manager_->ObjectDetectInput(imgs_batch);
-    auto end = std::chrono::steady_clock::now();
-    PRINT_INFO("object detect wasted time: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+    TIMEREND(object_detect);
+    DURATION_ms(object_detect);
     if (ret < 0) {
         PRINT_ERROR("model_manager_ ObjectDetectInput failed, ret=%d\n", ret);
         return -2;
     }
 
     auto detect_boxes = model_manager_->GetDetectBoxes();
-    start = std::chrono::steady_clock::now();
+    TIMERSTART(feature_extract);
     ret = model_manager_->FeatureExtractInput(imgs_batch, detect_boxes);
-    end = std::chrono::steady_clock::now();
-    PRINT_INFO("feature extract wasted time: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+    TIMEREND(feature_extract);
+    DURATION_ms(feature_extract);
     if (ret < 0) {
         PRINT_ERROR("model_manager_ FeatureExtractInput failed, ret=%d\n", ret);
         return -3;
@@ -88,10 +88,10 @@ int32_t ModelHandle::RawDataInput(std::vector<cv::Mat> &imgs_batch, ModelHandleC
             PRINT_ERROR("object_track_service_ is nullptr\n");
             return -4;
         }
-        start = std::chrono::steady_clock::now();
+        TIMERSTART(object_track);
         ret = object_track_service_->Track(imgs_batch, detect_boxes, feats_lists);
-        end = std::chrono::steady_clock::now();
-        PRINT_INFO("object track wasted time: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+        TIMEREND(object_track);
+        DURATION_ms(object_track);
         if (ret < 0) {
             PRINT_ERROR("object_track_ctx_ track failed, ret=%d\n", ret);
             return -5;
@@ -106,10 +106,10 @@ int32_t ModelHandle::RawDataInput(std::vector<cv::Mat> &imgs_batch, ModelHandleC
             PRINT_ERROR("person_reid_service_ is nullptr\n");
             return -6;
         }
-        start = std::chrono::steady_clock::now();
+        TIMERSTART(person_reid);
         ret = person_reid_service_->Reid(imgs_batch, detect_boxes, feats_lists);
-        end = std::chrono::steady_clock::now();
-        PRINT_INFO("person reid wasted time: %ld ms\n", std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count());
+        TIMEREND(person_reid);
+        DURATION_ms(person_reid);
         if (ret < 0) {
             PRINT_ERROR("person_reid_service_ reid failed, ret=%d\n", ret);
             return -7;

@@ -38,31 +38,30 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-18 100 \
     && update-alternatives --install /usr/bin/clang-tidy clang-tidy /usr/bin/clang-tidy-18 100 \
     && rm "$(pwd)/llvm.sh"
-# upgrade cmake 3.24.0
+# upgrade cmake v3.24.4
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends libssl-dev \
-    && wget "https://cmake.org/files/v3.24/cmake-3.24.0.tar.gz" \
-    && tar -zxvf "$(pwd)/cmake-3.24.0.tar.gz" -C "/usr/local" \
-    && rm "$(pwd)/cmake-3.24.0.tar.gz" \
-    && cd "/usr/local/cmake-3.24.0" \
-    && ./configure \
-    && make -j$(nproc) \
-    && make install \
-    && update-alternatives --install /usr/bin/cmake cmake /usr/local/bin/cmake 100 --force
-# install rocksdb
+    && wget "https://cmake.org/files/v3.24/cmake-3.24.4-linux-x86_64.tar.gz" \
+    && tar -zxvf "$(pwd)/cmake-3.24.4-linux-x86_64.tar.gz" -C "/usr/local" \
+    && rm "$(pwd)/cmake-3.24.4-linux-x86_64.tar.gz" \
+    && cd "/usr/local/cmake-3.24.4-linux-x86_64" \
+    && ln -s "/usr/local/cmake-3.24.4-linux-x86_64/bin/cmake" "/usr/local/bin/cmake" \
+    && ln -s "/usr/local/cmake-3.24.4-linux-x86_64/bin/cmake" "/usr/bin/cmake"
+# install rocksdb v9.6.2
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends libsnappy-dev zlib1g-dev libbz2-dev liblz4-dev libzstd-dev libgflags-dev \
     && git clone https://github.com/facebook/rocksdb.git \
     && cd "$(pwd)/rocksdb" \
+    && git checkout v9.6.2 \
     && make -j$(nproc) shared_lib \
     && make PREFIX="/usr/local/rocksdb" install-shared \
-    && echo "export LD_LIBRARY_PATH=\"/usr/local/rocksdb/lib:$LD_LIBRARY_PATH\"" >> ~/.zshrc
-# install faiss
+    && rm -rf "$(pwd)/rocksdb"
+# install faiss v1.8.0 after install cmake
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get -y install --no-install-recommends libopenblas-dev \
     && git clone https://github.com/facebookresearch/faiss.git \
     && cd "$(pwd)/faiss" \
-    && git checkout v1.9.0 \
+    && git checkout v1.8.0 \
     && cmake -S . -B build \
     -DFAISS_ENABLE_GPU=ON \
     -DFAISS_ENABLE_PYTHON=OFF \
@@ -77,10 +76,11 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     -DCMAKE_INSTALL_PREFIX=/usr/local/faiss_gpu \
     && make -C build -j$(nproc) faiss \    
     && make -C build install \
-    && echo "export LD_LIBRARY_PATH=\"/usr/local/faiss_gpu/lib:$LD_LIBRARY_PATH\"" >> ~/.zshrc
-# install libhv
+    && rm -rf "$(pwd)/faiss"
+# install libhv v1.2.6 after install cmake
 RUN git clone https://github.com/ithewei/libhv.git \
     && cd "$(pwd)/libhv" \
+    && git checkout v1.2.6 \
     && cmake -S . -B build \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr/local/libhv \
@@ -88,8 +88,8 @@ RUN git clone https://github.com/ithewei/libhv.git \
     -DBUILD_STATIC=OFF \
     && make -C build -j$(nproc) \
     && make -C build install \
-    && echo "export LD_LIBRARY_PATH=\"/usr/local/libhv/lib:$LD_LIBRARY_PATH\"" >> ~/.zshrc
-# install dependencies
+    && rm -rf "$(pwd)/libhv"
+# install opencv v3.4 after install cmake
 RUN apt-get dist-upgrade -y && \
     apt-get install -y \
     software-properties-common \
@@ -110,11 +110,10 @@ RUN mkdir opencv34 && cd opencv34 && \
     ldconfig && \
     cd ../.. \
     && rm -rf opencv34
-# install TensorRt
+# install TensorRt v8.6.1.6
 RUN wget https://developer.nvidia.com/downloads/compute/machine-learning/tensorrt/secure/8.6.1/tars/TensorRT-8.6.1.6.Linux.x86_64-gnu.cuda-11.8.tar.gz \
     && tar -zxvf "$(pwd)/TensorRT-8.6.1.6.Linux.x86_64-gnu.cuda-11.8.tar.gz" -C "/usr/local"\
     && rm "$(pwd)/TensorRT-8.6.1.6.Linux.x86_64-gnu.cuda-11.8.tar.gz" \
-    && echo "export LD_LIBRARY_PATH=\"/usr/local/TensorRT-8.6.1.6/lib:$LD_LIBRARY_PATH\"" >> ~/.zshrc \
     && echo "export PATH=\"/usr/local/TensorRT-8.6.1.6/bin:$PATH\"" >> ~/.zshrc
 # install ffmpeg
 RUN apt-get -y install ffmpeg

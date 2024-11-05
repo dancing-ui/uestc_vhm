@@ -80,7 +80,7 @@ public:
 
 private:
     DataBaseParameter cfg_;
-    SnowFlakeID gen_uuid_;
+    SnowFlakeID gen_uuid_; // TODO: delete snowflake id, add auto_increment id
 
 public:
     // unique name for the data base

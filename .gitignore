@@ -44,14 +44,7 @@ faiss_source
 leveldb
 rocksdb_source
 faiss_source
-LOG*
-*.sst
-*.log
-LOCK
-IDENTITY
-CURRENT
-MANIFEST-*
-OPTIONS-*
+person_reid_data
 better-enums
 brpc_faiss_server
 libhv
