@@ -32,9 +32,14 @@ struct ObjectTrackRes {
     std::vector<cv::Mat> imgs_batch;
 };
 
+struct PersonReidRes {
+    std::vector<std::vector<TrackerRes>> track_res;
+    std::vector<cv::Mat> imgs_batch;
+};
+
 struct ModelHandleRes {
     ObjectTrackRes object_track_res;
-    ObjectTrackRes person_reid_res;
+    PersonReidRes person_reid_res;
 };
 
 using ModelHandleCb = std::function<int32_t(ModelHandleRes const &)>;

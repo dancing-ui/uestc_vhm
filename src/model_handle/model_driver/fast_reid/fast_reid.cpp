@@ -16,17 +16,17 @@ FASTREID::~FASTREID() {
 int32_t FASTREID::Init() {
     baseline_ = std::make_unique<fastrt::Baseline>(trt::ModelConfig{
         "",
-        cfg_.reid_param.batch_size,
-        cfg_.reid_param.input_height,
-        cfg_.reid_param.input_width,
-        cfg_.reid_param.output_size,
-        cfg_.reid_param.device_id});
+        cfg_.feature_extract_param.batch_size,
+        cfg_.feature_extract_param.input_height,
+        cfg_.feature_extract_param.input_width,
+        cfg_.feature_extract_param.output_size,
+        cfg_.feature_extract_param.device_id});
     if (baseline_.get() == nullptr) {
         PRINT_ERROR("create baseline_ failed\n");
         return -1;
     }
-    if (!baseline_->deserializeEngine(cfg_.reid_param.engine_path)) {
-        PRINT_ERROR("deserialize fast_reid engine file(%s) failed\n", cfg_.reid_param.engine_path.c_str());
+    if (!baseline_->deserializeEngine(cfg_.feature_extract_param.engine_path)) {
+        PRINT_ERROR("deserialize fast_reid engine file(%s) failed\n", cfg_.feature_extract_param.engine_path.c_str());
         return -2;
     }
     return 0;
@@ -60,12 +60,12 @@ int32_t FASTREID::BatchInference(std::vector<cv::Mat> const &imgs_batch, std::ve
     for (size_t i = 0; i < sub_imgs_batch.size(); i++) {
         std::vector<cv::Mat> input;
         std::vector<cv::Mat> feats;
-        for (size_t batch_start = 0; batch_start < sub_imgs_batch[i].size(); batch_start += cfg_.reid_param.batch_size) {
+        for (size_t batch_start = 0; batch_start < sub_imgs_batch[i].size(); batch_start += cfg_.feature_extract_param.batch_size) {
             input.clear();
             /* collect batch */
-            for (int32_t img_idx = 0; img_idx < cfg_.reid_param.batch_size; ++img_idx) {
+            for (int32_t img_idx = 0; img_idx < cfg_.feature_extract_param.batch_size; ++img_idx) {
                 if ((batch_start + img_idx) >= sub_imgs_batch[i].size()) continue;
-                cv::Mat resizeImg(cfg_.reid_param.input_height, cfg_.reid_param.input_width, CV_8UC3);
+                cv::Mat resizeImg(cfg_.feature_extract_param.input_height, cfg_.feature_extract_param.input_width, CV_8UC3);
                 cv::resize(sub_imgs_batch[i][batch_start + img_idx], resizeImg, resizeImg.size(), 0, 0, cv::INTER_CUBIC); /* cv::INTER_LINEAR */
                 input.emplace_back(resizeImg.clone());
             }

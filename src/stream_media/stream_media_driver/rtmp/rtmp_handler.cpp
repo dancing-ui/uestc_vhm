@@ -99,6 +99,7 @@ int32_t RtmpHandler::InitParameter(StreamMediaCfgItem const &stream_media_cfg, M
     output_size_.height = stream_media_cfg_.dst_height;
     model_cfg_.param.src_h = capture_.get(cv::CAP_PROP_FRAME_HEIGHT);
     model_cfg_.param.src_w = capture_.get(cv::CAP_PROP_FRAME_WIDTH);
+    model_cfg_.person_reid_param.camera_ip = stream_media_cfg_.in;
     return 0;
 }
 

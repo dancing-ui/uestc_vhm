@@ -45,7 +45,7 @@ struct StreamMediaCfgItem {
     int32_t dst_height;
 };
 
-struct ReidParameter {
+struct FeatureExtractParameter {
     std::string engine_path;
     int32_t input_width;
     int32_t input_height;
@@ -94,15 +94,16 @@ struct DataBaseParameter {
 struct PersonReidParameter {
     NetworkInfo network_info;
     int32_t top_k{1000};
-    float reid_threshold;
+    uint64_t person_appeared_thresh;
     DataBaseParameter database_param_;
+    std::string camera_ip;
 };
 
 struct ModelCfgItem {
     // yolo
     InitParameter param;
-    // reid
-    ReidParameter reid_param;
+    // feature extract
+    FeatureExtractParameter feature_extract_param;
     // object track
     ObjectTrackParameter object_track_param;
     // person reid

@@ -157,6 +157,7 @@ extern bool CheckFloatEqual(float f_x, float f_y);
 extern int64_t StrToInt64(std::string const &str);
 extern std::string Int64ToStr(int64_t int64_x);
 extern std::string LocalTime();
+extern uint64_t GetTimeStamp();
 
 #ifndef TIMERSTART
 #define TIMERSTART(tag) auto tag##_start = std::chrono::steady_clock::now(), tag##_end = tag##_start

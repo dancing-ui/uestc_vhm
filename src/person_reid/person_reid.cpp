@@ -5,24 +5,38 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <memory>
 #include <opencv2/core/types.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <string>
 #include <unordered_set>
 #include <vector>
 #include "database.h"
+#include "http_client.h"
 #include "model_handle_common.h"
 #include "utils.h"
 #include "log.h"
+#include "nlohmann/json.hpp"
 
 namespace ns_uestc_vhm {
 
 int32_t PersonReidCtx::Init(PersonReidParameter const &cfg) {
+    int32_t ret{0};
     cfg_ = cfg;
     database_ = dbase::DataBases::instance()->at(cfg_.database_param_.db_name);
     if (database_ == nullptr) {
         PRINT_ERROR("PersonReidCtx::Init database_ is nullptr\n");
         return -1;
+    }
+    http_client_ = std::make_unique<HttpClient>();
+    if (http_client_.get() == nullptr) {
+        PRINT_ERROR("PersonReidCtx::Init http_client_ is nullptr\n");
+        return -2;
+    }
+    ret = http_client_->Init();
+    if (ret < 0) {
+        PRINT_ERROR("PersonReidCtx::Init http_client_ init failed, ret=%d\n", ret);
+        return -3;
     }
     return 0;
 }
@@ -77,6 +91,20 @@ int32_t PersonReidCtx::Reid(std::vector<cv::Mat> const &imgs_batch, std::vector<
                                 detect_boxes[i][j].width, detect_boxes[i][j].height,
                                 person_id};
             reid_boxes.emplace_back(reid_res);
+            if (person_appeared_times.count(person_id)) {
+                person_appeared_times[person_id]++;
+            } else {
+                person_appeared_times[person_id] = 1;
+            }
+            updatePersonPicture(person_id, imgs_batch[i], detect_boxes[i][j]);
+            if (person_appeared_times[person_id] >= cfg_.person_appeared_thresh && person_pictures.count(person_id)) {
+                // send request
+                std::string b64_picture{convertMat2B64(person_pictures[person_id])};
+                HttpRequestPtr request_ptr = createHttpRequest(person_id, b64_picture, utils::GetTimeStamp(), cfg_.camera_ip);
+                http_client_->SendRequest(request_ptr);
+                person_appeared_times.erase(person_id);
+                person_pictures.erase(person_id);
+            }
         }
         reid_boxes_lists_.emplace_back(reid_boxes);
     }
@@ -158,4 +186,44 @@ int64_t PersonReidCtx::confirmPersonId(std::vector<dbase::Recall> const &recall)
     }
     return -1;
 }
+
+HttpRequestPtr PersonReidCtx::createHttpRequest(int64_t person_id, std::string const &b64_picture, uint64_t timestamp, std::string const &camera_ip) const {
+    HttpRequestPtr request_ptr = std::make_shared<HttpRequest>();
+    std::string url{cfg_.network_info.protocol + "://" + cfg_.network_info.ip + ":" + std::to_string(cfg_.network_info.port) + "/" + cfg_.network_info.request_url};
+    request_ptr->SetUrl(url.c_str());
+    request_ptr->SetMethod("POST");
+    request_ptr->SetHeader("Connection", "keep-alive");
+    request_ptr->SetHeader("Content-Type", "application/json");
+    nlohmann::json json_obj;
+    json_obj["person_id"] = person_id;
+    json_obj["b64_picture"] = b64_picture;
+    json_obj["timestamp"] = timestamp;
+    json_obj["camera_ip"] = camera_ip;
+    request_ptr->SetBody(json_obj.dump());
+    request_ptr->timeout = 10;
+    return request_ptr;
+}
+
+void PersonReidCtx::updatePersonPicture(int64_t person_id, cv::Mat const &org_img, utils::Box const &box) {
+    // keep the optimal picture
+    cv::Mat crop{cropPicture(org_img, box)};
+    if (person_pictures.find(person_id) == person_pictures.end()) {
+        person_pictures[person_id] = crop.clone();
+    } else {
+        cv::Mat person_pic{person_pictures[person_id]};
+        if (person_pic.rows * person_pic.cols < crop.rows * crop.cols) {
+            person_pictures[person_id] = crop.clone();
+        }
+    }
+}
+
+cv::Mat PersonReidCtx::cropPicture(cv::Mat const &org_img, utils::Box const &box) {
+    float left = std::min(std::max(0.0f, box.left), static_cast<float>(org_img.cols));
+    float top = std::min(std::max(0.0f, box.top), static_cast<float>(org_img.rows));
+    float right = std::min(static_cast<float>(org_img.cols), box.left + box.width);
+    float bottom = std::min(static_cast<float>(org_img.rows), box.top + box.height);
+    cv::Rect2f rect{left, top, right - left, bottom - top};
+    return org_img(rect).clone();
+}
+
 } // ns_uestc_vhm

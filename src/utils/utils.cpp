@@ -113,4 +113,10 @@ std::string utils::LocalTime() {
     return date;
 }
 
+uint64_t utils::GetTimeStamp() {
+    auto now = std::chrono::system_clock::now();
+    auto duration = now.time_since_epoch();
+    return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+}
+
 } // ns_uestc_vhm
